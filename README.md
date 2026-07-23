@@ -98,11 +98,11 @@ $ bpeek <Job ID of start_ray_cluster.lsf>
 1. Get your Ray address, which is in the format of <IP:PORT>, e.g. 172.28.19.213:25052
 2. In a separate terminal,
 $ ssh -L 25053:<IP>:25053 <Mount Sinai ID>@minerva.hpc.mssm.edu
-3. Open http://localhost:25053/
+3. Open http://localhost:25053/ on your web browser. 
 
-You can also open the Ray Dashboard in VSCode
-1. Go to the Ports tab at the bottom panel of VS Code (next to the Terminal tab).
-2. Click Add Port and enter the port of the dashboard port (in this case, 25053)
-3. Press Ctrl + Shift + P (or Cmd + Shift + P on Mac) to open the Command Palette.
-4. Type and select: Browser: Open Integrated Browser.
-5. Enter the http://localhost:<PORT>
+You can also open the Ray Dashboard in VSCode instead
+4. Go to the Ports tab at the bottom panel of VS Code (next to the Terminal tab).
+5. Click Add Port and enter the port of the dashboard port (in this case, 25053)
+6. Press Ctrl + Shift + P (or Cmd + Shift + P on Mac) to open the Command Palette.
+7. Type and select: Browser: Open Integrated Browser.
+8. Enter the http://localhost:<PORT>
