@@ -1,0 +1,591 @@
+Abdomen, Acute	D000006
+Abortion, Incomplete	D000027
+Abortion, Missed	D000030
+Abortion, Threatened	D000033
+Acanthamoeba Keratitis	D015823
+Achlorhydria	D000126
+Acidosis, Lactic	D000140
+Acidosis, Renal Tubular	D000141
+Acinetobacter Infections	D000151
+Acromegaly	D000172
+Acute Coronary Syndrome	D054058
+Acute Disease	D000208
+Adenoma, Liver Cell	D018248
+Adenovirus Infections, Human	D000258
+Adrenal Hyperplasia, Congenital	D000312
+Adrenocortical Carcinoma	D018268
+Adrenoleukodystrophy	D000326
+Afibrinogenemia	D000347
+Agammaglobulinemia	D000361
+Agoraphobia	D000379
+Akathisia, Drug-Induced	D017109
+Albuminuria	D000419
+Alcoholic Intoxication	D000435
+Alcoholic Neuropathy	D020269
+Alopecia Areata	D000506
+Altitude Sickness	D000532
+Amenorrhea	D000568
+Amyloid Neuropathies, Familial	D028227
+Amyotrophic Lateral Sclerosis	D000690
+Ancylostomiasis	D000724
+Anemia, Hemolytic, Autoimmune	D000744
+Anemia, Hemolytic, Congenital Nonspherocytic	D000746
+Anemia, Sideroblastic	D000756
+Anorexia Nervosa	D000856
+Antithrombin III Deficiency	D020152
+Aortic Coarctation	D001017
+Aortic Valve Insufficiency	D001022
+Arsenic Poisoning	D020261
+Arteriosclerosis Obliterans	D001162
+Arthritis, Juvenile	D001171
+Arthritis, Psoriatic	D015535
+Ascites	D001201
+Asphyxia	D001237
+Asthma, Exercise-Induced	D001250
+Atrial Premature Complexes	D018880
+Atrioventricular Block	D054537
+Atrophic Vaginitis	D059268
+Atypical Hemolytic Uremic Syndrome	D065766
+Autistic Disorder	D001321
+Babesiosis	D001404
+Bacteriuria	D001437
+Bacteroides Infections	D001442
+Barth Syndrome	D056889
+Bartter Syndrome	D001477
+Behcet Syndrome	D001528
+Beriberi	D001602
+Berylliosis	D001607
+Biliary Fistula	D001658
+Binge Drinking	D063425
+Bipolar Disorder	D001714
+Bites, Human	D001734
+Blackwater Fever	D001742
+Blast Crisis	D001752
+Blastocystis Infections	D016776
+Blastomycosis	D001759
+Blepharospasm	D001764
+Blister	D001768
+Blood Loss, Surgical	D016063
+Botulism	D001906
+Bronchiolitis Obliterans Syndrome	D000092122
+Bronchitis, Chronic	D029481
+Bronchopneumonia	D001996
+Bronchopulmonary Dysplasia	D001997
+Brugada Syndrome	D053840
+Bulimia Nervosa	D052018
+Bundle-Branch Block	D002037
+Burkitt Lymphoma	D002051
+Cachexia	D002100
+Cadmium Poisoning	D002105
+Cafe-au-Lait Spots	D019080
+Campylobacter Infections	D002169
+Candidemia	D058387
+Candidiasis, Vulvovaginal	D002181
+Carbon Monoxide Poisoning	D002249
+Carcinoma, Ductal, Breast	D018270
+Carcinoma, Merkel Cell	D015266
+Carcinoma, Non-Small-Cell Lung	D002289
+Carcinoma, Ovarian Epithelial	D000077216
+Carcinoma, Pancreatic Ductal	D021441
+Carcinoma, Papillary	D002291
+Carcinoma, Renal Cell	D002292
+Carcinoma, Small Cell	D018288
+Carcinoma, Transitional Cell	D002295
+Cardiac Tamponade	D002305
+Cardiomyopathy, Dilated	D002311
+Castleman Disease	D005871
+Cataplexy	D002385
+Catatonia	D002389
+Catheter-Related Infections	D055499
+Causalgia	D002422
+Celiac Disease	D002446
+Cephalopelvic Disproportion	D052178
+Cerebral Palsy	D002547
+Chancroid	D002602
+Charcot-Marie-Tooth Disease	D002607
+Chemical and Drug Induced Liver Injury, Chronic	D056487
+Chikungunya Fever	D065632
+Child Behavior Disorders	D002653
+Cholera	D002771
+Cholestasis, Extrahepatic	D001651
+Chromoblastomycosis	D002862
+Chronic Pain	D059350
+Chylothorax	D002916
+Clonorchiasis	D003003
+Cocaine-Related Disorders	D019970
+Colic	D003085
+Colitis, Ischemic	D017091
+Common Variable Immunodeficiency	D017074
+Compassion Fatigue	D000068376
+Conduct Disorder	D019955
+Constriction, Pathologic	D003251
+Corneal Edema	D015715
+Corneal Ulcer	D003320
+Coronary Aneurysm	D003323
+Coronary Vasospasm	D003329
+Critical Illness	D016638
+Cryoglobulinemia	D003449
+Cryopyrin-Associated Periodic Syndromes	D056587
+Cryptorchidism	D003456
+Cryptosporidiosis	D003457
+Cutaneous Fistula	D017577
+Cystic Fibrosis	D003550
+Cystinosis	D003554
+Cytokine Release Syndrome	D000080424
+Cytomegalovirus Retinitis	D017726
+Decalcification, Pathologic	D003649
+Dental Plaque	D003773
+Dentin Sensitivity	D003807
+Depression, Postpartum	D019052
+Depressive Disorder, Treatment-Resistant	D061218
+Dermatitis, Atopic	D003876
+Dermatitis, Phototoxic	D017484
+Dermatitis, Seborrheic	D012628
+Dermatitis, Toxicodendron	D011040
+Dermatofibrosarcoma	D018223
+Desmoid Tumors	D018222
+Developmental Disabilities	D002658
+Diabetes Insipidus, Neurogenic	D020790
+Diaper Rash	D003963
+Diffuse Cerebral Sclerosis of Schilder	D002549
+Discrete Subaortic Stenosis	D021922
+Disseminated Intravascular Coagulation	D004211
+Diverticulitis, Colonic	D004239
+Dracunculiasis	D004320
+Drug Hypersensitivity Syndrome	D063926
+Duodenitis	D004382
+Dupuytren Contracture	D004387
+Dwarfism, Pituitary	D004393
+Dysarthria	D004401
+Dysentery, Amebic	D004404
+Dysmenorrhea	D004412
+Dyspareunia	D004414
+Dyspepsia	D004415
+Dyspnea, Paroxysmal	D004418
+Dysthymic Disorder	D019263
+Dysuria	D053159
+Earache	D004433
+Elephantiasis	D004604
+Elephantiasis, Filarial	D004605
+Embolism, Air	D004618
+Encephalitis, Herpes Simplex	D020803
+Encephalitis, Japanese	D004672
+Endometrial Hyperplasia	D004714
+Endometriosis	D004715
+Endometritis	D004716
+Enterobiasis	D017229
+Enterocolitis, Necrotizing	D020345
+Epidermolysis Bullosa Dystrophica	D016108
+Epididymitis	D004823
+Epilepsy, Absence	D004832
+Epilepsy, Benign Neonatal	D020936
+Epilepsy, Complex Partial	D017029
+Epilepsy, Temporal Lobe	D004833
+Epilepsy, Tonic-Clonic	D004830
+Erythema Nodosum	D004893
+Erythrasma	D004894
+Esophageal Achalasia	D004931
+Esophageal Spasm, Diffuse	D015155
+Esophageal Squamous Cell Carcinoma	D000077277
+Esophageal Stenosis	D004940
+Esophageal and Gastric Varices	D004932
+Esophagitis, Peptic	D004942
+Esotropia	D004948
+Essential Tremor	D020329
+Extensively Drug-Resistant Tuberculosis	D054908
+Eye Injuries, Penetrating	D015807
+Fabry Disease	D000795
+Facial Paralysis	D005158
+Factor VII Deficiency	D005168
+Fallopian Tube Neoplasms	D005185
+Familial Hypophosphatemic Rickets	D053098
+Familial Mediterranean Fever	D010505
+Fascioliasis	D005211
+Fascioloidiasis	D005213
+Fatigue Syndrome, Chronic	D015673
+Fecal Impaction	D005244
+Fetal Distress	D005316
+Fibrocystic Breast Disease	D005348
+Fibromyalgia	D005356
+Fissure in Ano	D005401
+Flail Chest	D005409
+Flushing	D005483
+Friedreich Ataxia	D005621
+Fusariosis	D060585
+Galactosemias	D005693
+Gastric Fistula	D005747
+Gastrointestinal Stromal Tumors	D046152
+Gaucher Disease	D005776
+Geographic Atrophy	D057092
+Giant Cell Arteritis	D013700
+Giardiasis	D005873
+Glioblastoma	D005909
+Glomerulonephritis, IGA	D005922
+Glomerulosclerosis, Focal Segmental	D005923
+Glomus Tumor	D005918
+Glucose Intolerance	D018149
+Glycogen Storage Disease Type II	D006009
+Gonorrhea	D006069
+Granuloma Inguinale	D006100
+Granulomatosis with Polyangiitis	D014890
+Graves Ophthalmopathy	D049970
+Gynecomastia	D006177
+HIV-Associated Lipodystrophy Syndrome	D039682
+Hand Dermatoses	D006229
+Heart Failure, Systolic	D054143
+Heartburn	D006356
+Helicobacter Infections	D016481
+Hematemesis	D006396
+Hemiplegia	D006429
+Hemoglobinuria, Paroxysmal	D006457
+Hemorrhoids	D006484
+Hepatic Veno-Occlusive Disease	D006504
+Hepatitis A	D006506
+Hepatitis B, Chronic	D019694
+Hepatitis C, Chronic	D019698
+Hepatitis, Autoimmune	D019693
+Hepatolenticular Degeneration	D006527
+Hernia, Hiatal	D006551
+Heroin Dependence	D006556
+Herpes Labialis	D006560
+Herpes Zoster Ophthalmicus	D006563
+Hiccup	D006606
+Hidradenitis Suppurativa	D017497
+Hirsutism	D006628
+Hodgkin Disease	D006689
+Homocystinuria	D006712
+Hot Flashes	D019584
+Huntington Disease	D006816
+Hyaline Membrane Disease	D006819
+Hymenolepiasis	D006925
+Hyperargininemia	D020162
+Hypercalciuria	D053565
+Hyperemia	D006940
+Hyperkeratosis, Epidermolytic	D017488
+Hyperkinesis	D006948
+Hyperlipidemia, Familial Combined	D006950
+Hyperlipoproteinemia Type I	D008072
+Hypernatremia	D006955
+Hyperoxaluria, Primary	D006960
+Hyperparathyroidism, Primary	D049950
+Hyperphosphatemia	D054559
+Hyperprolactinemia	D006966
+Hypertelorism	D006972
+Hypertension, Renovascular	D006978
+Hypertrichosis	D006983
+Hyperuricemia	D033461
+Hypoalbuminemia	D034141
+Hypophosphatasia	D007014
+Hypoplastic Left Heart Syndrome	D018636
+Hypotension, Orthostatic	D007024
+Hysteria	D007046
+IgA Deficiency	D017098
+Ileal Neoplasms	D007078
+Immune Reconstitution	D000074243
+Impetigo	D007169
+Impotence, Vasculogenic	D018783
+Inappropriate ADH Syndrome	D007177
+Inert Gas Narcosis	D007222
+Infertility, Female	D007247
+Insect Bites and Stings	D007299
+Insulinoma	D007340
+Intermittent Claudication	D007383
+Intestinal Perforation	D007416
+Intracranial Aneurysm	D002532
+Intussusception	D007443
+Iridocyclitis	D015863
+Irritable Bowel Syndrome	D043183
+Jaundice, Obstructive	D041781
+Keratoconjunctivitis Sicca	D007638
+Keratoconjunctivitis, Infectious	D007639
+Keratosis, Actinic	D055623
+Keratosis, Seborrheic	D017492
+Kidney Tubular Necrosis, Acute	D007683
+Lactose Intolerance	D007787
+Lambert-Eaton Myasthenic Syndrome	D015624
+Lead Poisoning, Nervous System, Childhood	D020264
+Leg Dermatoses	D007868
+Legionnaires' Disease	D007877
+Leiomyosarcoma	D007890
+Leishmaniasis, Visceral	D007898
+Lennox Gastaut Syndrome	D065768
+Leprosy, Borderline	D015439
+Leprosy, Lepromatous	D015440
+Lesch-Nyhan Syndrome	D007926
+Leukemia, Basophilic, Acute	D015471
+Leukemia, Eosinophilic, Acute	D015472
+Leukemia, Feline	D016582
+Leukemia, Hairy Cell	D007943
+Leukemia, Lymphocytic, Chronic, B-Cell	D015451
+Leukemia, Myeloid, Accelerated Phase	D015465
+Leukemia, Myeloid, Chronic-Phase	D015466
+Leukemia, Myelomonocytic, Acute	D015479
+Leukemia, Myelomonocytic, Chronic	D015477
+Leukemia, Neutrophilic, Chronic	D015467
+Leukemia, Promyelocytic, Acute	D015473
+Leukocyte-Adhesion Deficiency Syndrome	D018370
+Leukodystrophy, Metachromatic	D007966
+Leukoencephalopathy, Progressive Multifocal	D007968
+Lithiasis	D020347
+Loiasis	D008118
+Low Back Pain	D017116
+Lown-Ganong-Levine Syndrome	D008151
+Lupus Nephritis	D008181
+Lupus Vasculitis, Central Nervous System	D020945
+Lupus Vulgaris	D008177
+Lymphangioleiomyomatosis	D018192
+Lymphogranuloma Venereum	D008219
+Lymphohistiocytosis, Hemophagocytic	D051359
+Lymphoma, B-Cell, Marginal Zone	D018442
+Lymphoma, Follicular	D008224
+Lymphoma, Large-Cell, Immunoblastic	D016400
+Lymphoma, Mantle-Cell	D020522
+Lymphoma, T-Cell, Peripheral	D016411
+Lymphomatoid Granulomatosis	D008230
+Major Depressive Disorder	D003865
+Malaria, Avian	D008289
+Malaria, Cerebral	D016779
+Mania	D000087122
+Mansonelliasis	D008368
+Maxillary Sinusitis	D015523
+Meckel Diverticulum	D008467
+Medulloblastoma	D008527
+Megacolon, Toxic	D008532
+Melanoma, Amelanotic	D018328
+Melena	D008551
+Meningitis, Cryptococcal	D016919
+Meningitis, Haemophilus	D008583
+Meningitis, Pneumococcal	D008586
+Menkes Kinky Hair Syndrome	D007706
+Menorrhagia	D008595
+Mesenteric Vascular Occlusion	D008641
+Mesothelioma, Cystic	D018261
+Mesothelioma, Malignant	D000086002
+Mevalonate Kinase Deficiency	D054078
+Microsatellite Instability	D053842
+Microscopic Polyangiitis	D055953
+Migraine without Aura	D020326
+Milk Hypersensitivity	D016269
+Molluscum Contagiosum	D008976
+Mucopolysaccharidosis I	D008059
+Mucopolysaccharidosis II	D016532
+Mucopolysaccharidosis IV	D009085
+Mucopolysaccharidosis VI	D009087
+Mucormycosis	D009091
+Multiple Endocrine Neoplasia Type 2a	D018813
+Multiple Endocrine Neoplasia Type 2b	D018814
+Multiple Sclerosis, Chronic Progressive	D020528
+Multiple Sclerosis, Relapsing-Remitting	D020529
+Muscle Hypotonia	D009123
+Muscle Rigidity	D009127
+Muscle Spasticity	D009128
+Muscular Dystrophy, Duchenne	D020388
+Myalgia	D063806
+Myocardial Reperfusion Injury	D015428
+Myoclonic Epilepsy, Juvenile	D020190
+Myxedema	D009230
+Nasal Obstruction	D015508
+Nasopharyngeal Carcinoma	D000077274
+Necatoriasis	D009332
+Nelson Syndrome	D009347
+Nephrosis, Lipoid	D009402
+Nephrotic Syndrome	D009404
+Neuralgia, Postherpetic	D051474
+Neurocysticercosis	D020019
+Neurofibroma, Plexiform	D018318
+Neurofibromatosis 1	D009456
+Neuroleptic Malignant Syndrome	D009459
+Neuromyelitis Optica	D009471
+Niemann-Pick Disease, Type C	D052556
+Night Blindness	D009755
+Nocturia	D053158
+Non-alcoholic Fatty Liver Disease	D065626
+Noonan Syndrome	D009634
+Oligodendroglioma	D009837
+Ophthalmia Neonatorum	D009878
+Opisthorchiasis	D009889
+Optic Neuropathy, Ischemic	D018917
+Oral Ulcer	D019226
+Osteitis Deformans	D010001
+Osteoarthritis, Knee	D020370
+Osteogenesis Imperfecta	D010013
+Osteopetrosis	D010022
+Osteoporotic Fractures	D058866
+Otitis Media, Suppurative	D010035
+Otomycosis	D059249
+Ovarian Hyperstimulation Syndrome	D016471
+Paget Disease, Extramammary	D010145
+Pancreatitis, Acute Necrotizing	D019283
+Pancytopenia	D010198
+Panic Disorder	D016584
+Paracoccidioidomycosis	D010229
+Paralysis, Hyperkalemic Periodic	D020513
+Paraparesis, Spastic	D020336
+Parasitemia	D018512
+Parathyroid Neoplasms	D010282
+Parkinson Disease, Postencephalitic	D010301
+Pemphigoid, Bullous	D010391
+Pemphigus	D010392
+Pericardial Effusion	D010490
+Pericarditis, Constrictive	D010494
+Peritonitis, Tuberculous	D014395
+Photophobia	D020795
+Pityriasis Rosea	D017515
+Plague	D010930
+Plaque, Atherosclerotic	D058226
+Pleural Effusion, Malignant	D016066
+Pneumonia, Mycoplasma	D011019
+Pneumonia, Pneumococcal	D011018
+Pneumonia, Staphylococcal	D011023
+Polychondritis, Relapsing	D011081
+Polycystic Ovary Syndrome	D011085
+Polycythemia Vera	D011087
+Polyuria	D011141
+Positive-Pressure Respiration, Intrinsic	D018467
+Precursor B-Cell Lymphoblastic Leukemia-Lymphoma	D015452
+Pregnancy Complications, Hematologic	D011250
+Pregnancy, Abdominal	D011269
+Premature Birth	D047928
+Presbyopia	D011305
+Pressure Ulcer	D003668
+Primary Myelofibrosis	D055728
+Primary Ovarian Insufficiency	D016649
+Proctocolitis	D011350
+Prostatic Neoplasms, Castration-Resistant	D064129
+Prostatitis	D011472
+Protein S Deficiency	D018455
+Protein-Energy Malnutrition	D011502
+Protein-Losing Enteropathies	D011504
+Proteus Infections	D011512
+Prurigo	D011536
+Pruritus Ani	D011538
+Pseudomonas Infections	D011552
+Psittacosis	D009956
+Psychophysiologic Disorders	D011602
+Puberty, Delayed	D011628
+Pulmonary Arterial Hypertension	D000081029
+Pulmonary Emphysema	D011656
+Pulmonary Eosinophilia	D011657
+Pulmonary Valve Insufficiency	D011665
+Purpura, Thrombotic Thrombocytopenic	D011697
+Pyoderma Gangrenosum	D017511
+Rabies	D011818
+Radiation Injuries, Experimental	D011833
+Rat-Bite Fever	D011906
+Reinfection	D000084063
+Relapsing Fever	D012061
+Renal Artery Obstruction	D012078
+Renal Colic	D056844
+Reproductive Tract Infections	D060737
+Restless Legs Syndrome	D012148
+Retinal Detachment	D012163
+Retinal Hemorrhage	D012166
+Retinal Vein Occlusion	D012170
+Retinoblastoma	D012175
+Retinopathy of Prematurity	D012178
+Rett Syndrome	D015518
+Rheumatic Heart Disease	D012214
+Rhinitis, Allergic, Seasonal	D006255
+Rhinitis, Vasomotor	D012223
+Rocky Mountain Spotted Fever	D012373
+Rotavirus Infections	D012400
+Salmonella Infections, Animal	D012481
+Sarcoma, Alveolar Soft Part	D018234
+Sarcoma, Ewing	D012512
+Sarcoma, Synovial	D013584
+Schistosomiasis mansoni	D012555
+Schizophrenia, Paranoid	D012563
+Scleritis	D015423
+Sclerosis	D012598
+Scorpion Stings	D065008
+Scurvy	D012614
+Seasonal Affective Disorder	D016574
+Seizures, Febrile	D003294
+Septo-Optic Dysplasia	D025962
+Serratia Infections	D016868
+Serum Sickness	D012713
+Sezary Syndrome	D012751
+Short Bowel Syndrome	D012778
+Shoulder Pain	D020069
+Sialorrhea	D012798
+Sick Sinus Syndrome	D012804
+Sjogren's Syndrome	D012859
+Sjogren-Larsson Syndrome	D016111
+Sleep Deprivation	D012892
+Sleep Paralysis	D020188
+Sleepiness	D000077260
+Small Cell Lung Carcinoma	D055752
+Snake Bites	D012909
+Sneezing	D012912
+Snoring	D012913
+Soft Tissue Infections	D018461
+Spasms, Infantile	D013036
+Sphincter of Oddi Dysfunction	D046628
+Spider Bites	D001098
+Spondylitis, Ankylosing	D013167
+Sporotrichosis	D013174
+Sprue, Tropical	D013182
+Stomach Neoplasms	D013274
+Stomatitis, Aphthous	D013281
+Stress Disorders, Post-Traumatic	D013313
+Strongyloidiasis	D013322
+Substance Abuse, Intravenous	D015819
+Surgical Wound Dehiscence	D013529
+Syncope, Vasovagal	D019462
+Tachycardia, Atrioventricular Nodal Reentry	D013611
+Tachycardia, Paroxysmal	D013614
+Tardive Dyskinesia	D000071057
+Teratocarcinoma	D018243
+Tetralogy of Fallot	D013771
+Thrombasthenia	D013915
+Thromboangiitis Obliterans	D013919
+Thrombocythemia, Essential	D013920
+Thyroid Crisis	D013958
+Tics	D020323
+Tinea Cruris	D000084002
+Tinea Pedis	D014008
+Tinea Versicolor	D014010
+Tinnitus	D014012
+Tissue Adhesions	D000267
+Tooth Loss	D016388
+Torticollis	D014103
+Trachoma	D014141
+Trichinellosis	D014235
+Trichomonas Vaginitis	D014247
+Trichuriasis	D014257
+Tricuspid Atresia	D018785
+Trigeminal Neuralgia	D014277
+Triple Negative Breast Neoplasms	D064726
+Trypanosomiasis, African	D014353
+Tuberculosis, Ocular	D014392
+Tularemia	D014406
+Turner Syndrome	D014424
+Tympanic Membrane Perforation	D018058
+Typhus, Epidemic Louse-Borne	D014438
+Tyrosinemias	D020176
+Ureteral Neoplasms	D014516
+Ureteral Obstruction	D014517
+Urethral Neoplasms	D014523
+Urethritis	D014526
+Urinary Bladder, Overactive	D053201
+Urinary Incontinence, Urge	D053202
+Uterine Cervical Neoplasms	D002583
+Uterine Inertia	D014593
+Uveal Melanoma	D000098943
+Vaccinia	D014615
+Varicose Ulcer	D014647
+Venous Thromboembolism	D054556
+Ventricular Premature Complexes	D018879
+Vitiligo	D014820
+Vulvar Lichen Sclerosus	D007724
+Waldenstrom Macroglobulinemia	D008258
+Wernicke Encephalopathy	D014899
+West Nile Fever	D014901
+Wet Macular Degeneration	D057135
+Xeroderma Pigmentosum	D014983
+Xerophthalmia	D014985
+Yellow Fever	D015004
+Zellweger Syndrome	D015211
+alpha-Mannosidosis	D008363
+beta-Thalassemia	D017086
+von Hippel-Lindau Disease	D006623

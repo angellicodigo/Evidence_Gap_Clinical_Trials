@@ -1,0 +1,371 @@
+Alveolar Surface Tension Reduction	N0000008294
+Analgesia	N0000175439
+Antacid	N0000008295
+Antiperspirant Activity	N0000008296
+Antipruritic Activity	N0000008297
+Appetite Stimulation	N0000175373
+Appetite Suppression	N0000175372
+Astringent Activity	N0000008301
+Atrial Repolarization	N0000008303
+Bone Formation Stimulation	N0000008311
+Bone Resorption Inhibition	N0000008313
+Bone Resorption Stimulation	N0000008314
+Bronchodilation	N0000008322
+Cell-mediated Immunity	N0000184306
+Cellular Growth Phase Arrest	N0000008344
+Cellular Synthetic Phase Arrest	N0000008349
+Centrally-mediated Muscle Relaxation	N0000175730
+Cholagogue Activity	N0000008356
+Collagen Formation Promotion	N0000008367
+Connective Tissue Permeability Alteration Increase	N0000020052
+DNA Methylation Decrease	N0000019999
+Decreased Adhesion Factor Activity	N0000008384
+Decreased Amino Acid Synthesis	N0000010235
+Decreased Autonomic Ganglionic Activity	N0000175644
+Decreased B Lymphocyte Activation	N0000182156
+Decreased Bladder Contractility	N0000008420
+Decreased Bladder Sphincter Tone	N0000008421
+Decreased Blood Pressure	N0000178477
+Decreased Blood Viscosity	N0000175893
+Decreased Bradykinin Activity	N0000008422
+Decreased Bradykinin Degradation	N0000008423
+Decreased Bradykinin Production	N0000008424
+Decreased Brain Stem Dopamine Activity	N0000008431
+Decreased Brain Stem Organized Electrical Activity	N0000008445
+Decreased Brain Stem Substance P Activity	N0000008447
+Decreased Calcitonin Secretion	N0000008452
+Decreased Capillary Permeability	N0000010253
+Decreased Cardiac Muscle Acetylcholine Activity	N0000008453
+Decreased Cardiac Muscle Organized Electrical Activity	N0000008472
+Decreased Cell Membrane Integrity	N0000008476
+Decreased Cell Membrane Synthesis & Repair	N0000008477
+Decreased Cell Wall Integrity	N0000008478
+Decreased Cell Wall Synthesis & Repair	N0000008479
+Decreased Cellular Death	N0000008480
+Decreased Cellular Locomotion	N0000008481
+Decreased Cerebellum Organized Electrical Activity	N0000008524
+Decreased Cerebral Cortex Organized Electrical Activity	N0000008547
+Decreased Cholesterol Absorption	N0000008553
+Decreased Cholesterol Secretion	N0000010237
+Decreased Cholesterol Synthesis	N0000008555
+Decreased Coagulation Factor Concentration	N0000008557
+Decreased Collecting Duct K+ Excretion	N0000008562
+Decreased Collecting Duct Water Permeability	N0000008567
+Decreased Complement Activity	N0000008568
+Decreased Complement Degradation	N0000008569
+Decreased Complement Production	N0000008570
+Decreased Copper Ion Absorption	N0000175529
+Decreased Cytokine Activity	N0000008571
+Decreased Cytokine Production	N0000008573
+Decreased Cytoskeleton Integrity	N0000008574
+Decreased DNA Integrity	N0000008576
+Decreased DNA Replication	N0000008577
+Decreased Dihydrotestosterone Secretion	N0000009936
+Decreased Distal Tubule Ca++ Excretion	N0000008579
+Decreased Distal Tubule H+ Excretion	N0000008581
+Decreased Distal Tubule K+ Excretion	N0000008583
+Decreased Distal Tubule Na+ Excretion	N0000008585
+Decreased Distal Tubule PO4-- Excretion	N0000008586
+Decreased Embryonic Implantation	N0000008595
+Decreased Endocytosis	N0000008596
+Decreased Endothelial Proliferation	N0000175678
+Decreased Enteric Nervous System GABA Activity	N0000008610
+Decreased Enteric Nervous System Serotonin Activity	N0000008620
+Decreased Epithelial Proliferation	N0000175676
+Decreased Erythroid Cell Production	N0000008625
+Decreased Esophageal Muscle Tone	N0000008628
+Decreased Exocytosis	N0000008629
+Decreased Fibrinolysis	N0000175632
+Decreased Fibroblast Migration	N0000010248
+Decreased Folic Acid Modification	N0000009935
+Decreased Follicle Stimulating Hormone Secretion	N0000008630
+Decreased Gastric Motility	N0000008640
+Decreased Glucagon Secretion	N0000008644
+Decreased Glucocorticoid Clearance	N0000009939
+Decreased Glucocorticoid Secretion	N0000008645
+Decreased Gluconeogenesis	N0000008646
+Decreased Glucose Transport into Cells	N0000008647
+Decreased Glycogenesis	N0000008650
+Decreased Glycogenolysis	N0000008651
+Decreased Glycolysis	N0000008652
+Decreased GnRH Activity	N0000008637
+Decreased GnRH Secretion	N0000008638
+Decreased Granulocytic Cell Production	N0000008654
+Decreased Growth Factor Activity	N0000010232
+Decreased Growth Hormone Secretion	N0000008632
+Decreased Histamine Degradation	N0000008658
+Decreased Histamine Production	N0000008659
+Decreased Histamine Release	N0000175628
+Decreased IgE Activity	N0000175793
+Decreased Insulin Secretion	N0000008666
+Decreased Intercellular Communication	N0000008667
+Decreased Intraocular Aqueous Secretion	N0000009944
+Decreased Intravascular Volume	N0000008669
+Decreased Iodine Organification	N0000008670
+Decreased Large Intestinal Motility	N0000008679
+Decreased Large Intestinal Muscle Tone	N0000008680
+Decreased Leukotriene Activity	N0000008681
+Decreased Leukotriene Production	N0000008683
+Decreased Lipogenesis	N0000008687
+Decreased Lipolysis	N0000008688
+Decreased Luteinizing Hormone Secretion	N0000009930
+Decreased Lysosomal Function	N0000008700
+Decreased Meiosis	N0000008704
+Decreased Metabolic Rate	N0000008707
+Decreased Midbrain Organized Electrical Activity	N0000008727
+Decreased Mineralocorticoid Secretion	N0000008731
+Decreased Mitosis	N0000008732
+Decreased Nasal and Sinus Secretions	N0000008896
+Decreased Ovarian Estrogen Secretion	N0000008769
+Decreased Ovarian Progesterone Secretion	N0000008770
+Decreased PTH Secretion	N0000008777
+Decreased Parasympathetic Acetylcholine Activity	N0000008779
+Decreased Peripheral Respiratory Drive	N0000008825
+Decreased Phagocytosis	N0000008826
+Decreased Placental Human Chorionic Gonadotropin Secretion	N0000008828
+Decreased Platelet Activating Factor Activity	N0000008829
+Decreased Platelet Activating Factor Production	N0000008831
+Decreased Platelet Aggregation	N0000008832
+Decreased Platelet Production	N0000175972
+Decreased Polymorphonuclear Leukocyte Migration	N0000010246
+Decreased Prolactin Secretion	N0000008833
+Decreased Prostaglandin Activity	N0000008834
+Decreased Prostaglandin Production	N0000008836
+Decreased Prostatic Size	N0000008838
+Decreased Protein Modification	N0000008840
+Decreased Protein Synthesis	N0000008841
+Decreased Prothrombin Activity	N0000193995
+Decreased Proximal Tubule PO4-- Excretion	N0000008849
+Decreased RNA Integrity	N0000008852
+Decreased RNA Replication	N0000008853
+Decreased Respiratory Secretion Viscosity	N0000008867
+Decreased Reverse Transcription to DNA	N0000008869
+Decreased Sebaceous Gland Activity	N0000009982
+Decreased Sebaceous Gland Quantity	N0000009979
+Decreased Sensory-Somatic Nervous System Organized Electrical Activity	N0000008889
+Decreased Serotonin Degradation	N0000008894
+Decreased Serotonin Production	N0000008895
+Decreased Skin Keratinization	N0000009735
+Decreased Small Intestinal Muscle Tone	N0000008898
+Decreased Smooth Muscle Acetylcholine Activity	N0000008899
+Decreased Smooth Muscle Nerve Growth Factor Activity	N0000008914
+Decreased Smooth Muscle Organized Electrical Activity	N0000008918
+Decreased Sperm Motility	N0000008924
+Decreased Sphincter of Odi Tone	N0000008925
+Decreased Spinal Cord Organized Electrical Activity	N0000008945
+Decreased Striated Muscle Contraction	N0000008953
+Decreased Striated Muscle Organized Electrical Activity	N0000008969
+Decreased Striated Muscle Tone	N0000175735
+Decreased Sympathetic Norepinephrine Activity	N0000008992
+Decreased T Lymphocyte Production	N0000008998
+Decreased Testosterone Secretion	N0000009002
+Decreased Thromboxane Activity	N0000009004
+Decreased Thromboxane Production	N0000009006
+Decreased Thyroid Hormone Iodination	N0000009007
+Decreased Thyroid Hormone Secretion	N0000009008
+Decreased Thyroid Stimulating Hormone Secretion	N0000009001
+Decreased Tracheo-Bronchial Mucosal Edema	N0000009970
+Decreased Tracheo-Bronchial Secretions	N0000009009
+Decreased Tracheobronchial Stretch Receptor Activity	N0000009010
+Decreased Transcription to RNA	N0000009011
+Decreased Urethra Smooth Muscle Tone	N0000009976
+Decreased Uric Acid Synthesis	N0000009013
+Decreased Uterine Smooth Muscle Contraction or Tone	N0000009014
+Decreased Vascular Smooth Muscle Tone	N0000010271
+Decreased Ventilatory Gas Flow	N0000009019
+Delay Conduction System Repolarization	N0000010287
+Emesis	N0000009033
+Emesis Suppression	N0000009034
+Emollient Activity	N0000009035
+Enhance Penile Erection	N0000009040
+General Anesthesia	N0000175975
+Glycosaminoglycan Metabolism Increase	N0000020042
+Glycosphingolipid Synthesis Decrease	N0000020022
+Glycosphingolipid Synthesis Increase	N0000020021
+Hemoglobin Function Restoration	N0000193979
+Humoral Immunity	N0000185002
+Increase Spermatogenesis	N0000009077
+Increased Adhesion Factor Production	N0000009082
+Increased Adrenal Norepinephrine Secretion	N0000009084
+Increased B Lymphocyte Destruction	N0000009113
+Increased Bladder Contractility	N0000009116
+Increased Blood Pressure	N0000178478
+Increased Brain Stem Serotonin Activity	N0000009142
+Increased Cardiac Muscle Organized Electrical Activity	N0000009168
+Increased Cell Membrane Integrity	N0000009172
+Increased Cellular Death	N0000009176
+Increased Cellular Locomotion	N0000009177
+Increased Cerebral Cortex Dopamine Activity	N0000009229
+Increased Cerebral Cortex GABA Activity	N0000009234
+Increased Cerebral Cortex Norepinephrine Activity	N0000009242
+Increased Cerebral Cortex Organized Electrical Activity	N0000009243
+Increased Cervical Dilation	N0000009247
+Increased Cholesterol Elimination	N0000009250
+Increased Cholesterol Synthesis	N0000009251
+Increased Coagulation Factor IX Activity	N0000184153
+Increased Coagulation Factor IX Concentration	N0000184157
+Increased Coagulation Factor VIII Activity	N0000175914
+Increased Coagulation Factor VIII Concentration	N0000175915
+Increased Coagulation Factor X Activity	N0000184154
+Increased Coagulation Factor X Concentration	N0000184158
+Increased Collecting Duct Na+ Excretion	N0000009260
+Increased Collecting Duct Water Permeability	N0000009263
+Increased Cytokine Activity	N0000009267
+Increased Cytokine Degradation	N0000009268
+Increased Cytokine Production	N0000009269
+Increased DNA Integrity	N0000009270
+Increased DNA Replication	N0000009271
+Increased Distal Tubule Ca++ Excretion	N0000009273
+Increased Distal Tubule Cl- Excretion	N0000009274
+Increased Distal Tubule H+ Excretion	N0000009275
+Increased Distal Tubule HCO3- Excretion	N0000009276
+Increased Distal Tubule K+ Excretion	N0000009277
+Increased Distal Tubule Mg++ Excretion	N0000009278
+Increased Distal Tubule Na+ Excretion	N0000009279
+Increased Distal Tubule PO4-- Excretion	N0000009280
+Increased Endothelial Coagulation Activity	N0000009292
+Increased Enteric Nervous System Acetylcholine Activity	N0000009294
+Increased Epithelial Proliferation	N0000175675
+Increased Erythroid Cell Production	N0000009319
+Increased Erythropoetin Secretion	N0000009320
+Increased Esophageal Motility	N0000009321
+Increased Esophageal Muscle Tone	N0000009322
+Increased Exocytosis	N0000009323
+Increased GHRH Activity	N0000009327
+Increased Gallbladder Tone	N0000009333
+Increased Gastric Motility	N0000009334
+Increased Glomerular Filtration Pressure	N0000009337
+Increased Glucagon Secretion	N0000009338
+Increased Glucocorticoid Secretion	N0000009339
+Increased Gluconeogenesis	N0000009340
+Increased Glucose Transport into Cells	N0000009341
+Increased Glutathione Concentration	N0000175960
+Increased Glycogenesis	N0000009344
+Increased Glycogenolysis	N0000009345
+Increased Glycolysis	N0000009346
+Increased GnRH Secretion	N0000009332
+Increased Granulocytic Cell Destruction	N0000009347
+Increased Granulocytic Cell Production	N0000009348
+Increased Growth Factor Activity	N0000010233
+Increased Growth Hormone Secretion	N0000009326
+Increased Hematopoietic Stem Cell Mobilization	N0000178324
+Increased Histamine Degradation	N0000009352
+Increased Histamine Production	N0000009353
+Increased Histamine Release	N0000175629
+Increased Insulin Secretion	N0000009360
+Increased Intravascular Volume	N0000009361
+Increased LES Tone	N0000009370
+Increased Large Intestinal Motility	N0000009371
+Increased Large Intestinal Muscle Tone	N0000009372
+Increased Lipogenesis	N0000009379
+Increased Lipolysis	N0000009380
+Increased Loop of Henle Ca++ Excretion	N0000009381
+Increased Loop of Henle Cl- Excretion	N0000009382
+Increased Loop of Henle K+ Excretion	N0000009385
+Increased Loop of Henle Mg++ Excretion	N0000009386
+Increased Loop of Henle Na+ Excretion	N0000009387
+Increased Luteinizing Hormone Secretion	N0000009931
+Increased Lysosomal Function	N0000009392
+Increased Macrophage Proliferation	N0000183884
+Increased Medullary Respiratory Drive	N0000009393
+Increased Megakaryocyte Maturation	N0000175969
+Increased Melatonin Activity	N0000009397
+Increased Metabolic Rate	N0000009399
+Increased Mineralocorticoid Secretion	N0000009423
+Increased Oncotic Pressure	N0000009457
+Increased Organic Ion Degradation	N0000009458
+Increased Ovarian Estrogen Secretion	N0000009461
+Increased Oxygen Carrying Capacity	N0000009463
+Increased PTH Secretion	N0000009469
+Increased Parasympathetic Acetylcholine Activity	N0000009471
+Increased Phagocytosis	N0000009518
+Increased Platelet Activating Factor Activity	N0000009521
+Increased Platelet Aggregation	N0000009524
+Increased Platelet Production	N0000175970
+Increased Prolactin Secretion	N0000009525
+Increased Prostaglandin Activity	N0000009526
+Increased Prostaglandin Production	N0000009528
+Increased Protein Breakdown	N0000009531
+Increased Protein Synthesis	N0000009533
+Increased Prothrombin Activity	N0000175965
+Increased Proximal Tubule Cl- Excretion	N0000009535
+Increased Proximal Tubule HCO3- Excretion	N0000009537
+Increased Proximal Tubule K+ Excretion	N0000009538
+Increased Proximal Tubule Na+ Excretion	N0000009540
+Increased RNA Degradation	N0000194154
+Increased RNA Integrity	N0000009544
+Increased Renal Urea Excretion	N0000010240
+Increased Retinal Pigment Epithelium Function	N0000193798
+Increased Sensory-Somatic Nervous System Nerve Growth Factor Activity	N0000009578
+Increased Sensory-Somatic Nervous System Substance P Activity	N0000009583
+Increased Serotonin Production	N0000009587
+Increased Skin Keratinization	N0000009974
+Increased Smooth Muscle Acetylcholine Activity	N0000009591
+Increased Sphincter of Odi Tone	N0000009617
+Increased Spinal Cord GABA Activity	N0000009628
+Increased Striated Muscle Contraction	N0000009645
+Increased T Lymphocyte Activation	N0000182157
+Increased T Lymphocyte Destruction	N0000009689
+Increased T Lymphocyte Production	N0000009690
+Increased Testosterone Secretion	N0000009694
+Increased Thrombolysis	N0000009695
+Increased Thromboxane Production	N0000009698
+Increased Thyroid Hormone Iodination	N0000009699
+Increased Thyroid Hormone Secretion	N0000009700
+Increased Thyroid Stimulating Hormone Secretion	N0000009693
+Increased Tracheo-Bronchial Secretions	N0000009701
+Increased Transcription to RNA	N0000009703
+Increased Urethra Smooth Muscle Tone	N0000009977
+Increased Uterine Smooth Muscle Contraction or Tone	N0000009705
+Increased Vaginal Muscle Tone	N0000009707
+Increased Vaginal Secretion	N0000009708
+Increased Vitamin Uptake and Modification	N0000009933
+Inhibit Ovarian Follicular Phase	N0000009715
+Inhibit Ovulation	N0000009717
+Inhibit Ovum Fertilization	N0000175830
+Inhibition Carbohydrate Digestion	N0000009722
+Inhibition Fat Digestion	N0000009723
+Inhibition Gastric Acid Secretion	N0000009724
+Inhibition Gastric Mucous Secretion	N0000009725
+Inhibition Large Intestine Fluid/Electrolyte Absorption	N0000009726
+Inhibition Small Intestine Fluid/Electrolyte Absorption	N0000009730
+Lengthen Conduction System Depolarization Time	N0000010283
+Local Anesthesia	N0000175976
+Microtubule Inhibition	N0000175085
+Negative Inotropy	N0000009757
+Neuromuscular Depolarizing Blockade	N0000175733
+Neuromuscular Nondepolarizing Blockade	N0000175732
+Nodal Depolarization	N0000009763
+Nodal Repolarization	N0000009764
+Passively Acquired Immunity	N0000183365
+Penile Venous Vasodilation	N0000009798
+Photosensitizing Activity	N0000009801
+Positive Chronotropy	N0000009808
+Positive Inotropy	N0000009809
+Pulmonary Venous Vasodilation	N0000009818
+Pupillary Dilation	N0000009820
+Reversed Anticoagulation Activity	N0000175982
+Salivation Inhibition	N0000009842
+Salivation Stimulation	N0000009843
+Skin Barrier Activity	N0000010282
+Stimulate Breast Glandular Development	N0000009857
+Stimulate Embryonic & Fetal Development	N0000009860
+Stimulate Ovarian Follicular Phase	N0000009861
+Stimulate Ovulation	N0000009863
+Stimulate Penile Development	N0000009864
+Stimulate Uterine Secretory Phase	N0000009867
+Stimulation Gastric Acid Secretion	N0000009868
+Stimulation Gastric Mucous Secretion	N0000009869
+Stimulation Large Intestine Fluid/Electrolyte Absorption	N0000009870
+Stimulation Large Intestine Fluid/Electrolyte Secretion	N0000009871
+Stimulation Pancreatic Enzymatic Secretion	N0000009872
+Stimulation Pancreatic Fluid/Electrolyte Secretion	N0000009873
+Stimulation Small Intestine Fluid/Electrolyte Absorption	N0000009874
+Stimulation Small Intestine Fluid/Electrolyte Secretion	N0000009875
+Systemic Venous Vasoconstriction	N0000009882
+Systemic Venous Vasodilation	N0000009883
+T Lymphocyte Costimulation Activity Blockade	N0000182829
+Unknown Physiological Effect	N0000009925
+Uricosuric Activity	N0000009896
+Vascular Growth Decrease	N0000020005
+Vascular Sclerosing Activity	N0000009905

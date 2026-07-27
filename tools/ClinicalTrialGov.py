@@ -4,6 +4,22 @@ from pathlib import Path
 from typing import Any
 import json
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+
+retry_strategy = Retry(
+    total=8,                          # up to 8 retries per request
+    backoff_factor=1,                 # sleeps 1s, 2s, 4s, 8s, 16s...
+    status_forcelist=[429, 500, 502, 503, 504],
+    allowed_methods=["GET"],
+    respect_retry_after_header=True,  # honor the server's Retry-After header if it sends one
+)
+
+max_connections = 64
+session = requests.Session()
+adapter = HTTPAdapter(pool_connections=max_connections, pool_maxsize=max_connections)
+session.mount("https://", adapter)
+session.mount("http://", adapter)
 
 def extract_clinical_info(study: dict[str, Any]) -> dict[str, Any]:
     protocolSection = study.get("protocolSection", {})
@@ -36,9 +52,7 @@ def extract_clinical_info(study: dict[str, Any]) -> dict[str, Any]:
             "phases": designModule.get("phases"),
             "allocation": designInfo.get("allocation"),
             "interventionModel": designInfo.get("interventionModel"),
-            "interventionModelDescription": designInfo.get(
-                "interventionModelDescription"
-            ),
+            "interventionModelDescription": designInfo.get("interventionModelDescription"),
             "primaryPurpose": designInfo.get("primaryPurpose"),
             "observationalModel": designInfo.get("observationalModel"),
             "timePerspective": designInfo.get("timePerspective"),
@@ -86,56 +100,48 @@ def extract_clinical_info(study: dict[str, Any]) -> dict[str, Any]:
 
         extracted["results"] = {
             "participantFlow": {
-                "preAssignmentDetails": participantFlowModule.get(
-                    "preAssignmentDetails"
-                ),
-                "recruitmentDetails": participantFlowModule.get(
-                    "recruitmentDetails"
-                ),
+                "preAssignmentDetails": participantFlowModule.get("preAssignmentDetails"),
+                "recruitmentDetails": participantFlowModule.get("recruitmentDetails"),
                 "groups": participantFlowModule.get("groups", []),
             },
             "baselineCharacteristics": {
-                "populationDescription": baselineCharacteristicsModule.get(
-                    "populationDescription"
-                ),
+                "populationDescription": baselineCharacteristicsModule.get("populationDescription"),
                 "groups": baselineCharacteristicsModule.get("groups", []),
                 "denoms": baselineCharacteristicsModule.get("denoms", []),
-                "measures": baselineCharacteristicsModule.get("measures", [])
+                "measures": baselineCharacteristicsModule.get("measures", []),
             },
             "outcomesMeasures": [
-                    {
-                        k: v
-                        for k, v in outcome.items()
-                        if k != "reportingStatus"
-                    }
-                    for outcome in outcomeMeasuresModule.get("outcomeMeasures", [])
-                ],
+                {
+                    k: v
+                    for k, v in outcome.items()
+                    if k != "reportingStatus"
+                }
+                for outcome in outcomeMeasuresModule.get("outcomeMeasures", [])
+            ],
             "adverseEvents": {
-                "frequencyThreshold": adverseEventsModule.get(
-                    "frequencyThreshold"
-                ),
+                "frequencyThreshold": adverseEventsModule.get("frequencyThreshold"),
                 "timeFrame": adverseEventsModule.get("timeFrame"),
                 "description": adverseEventsModule.get("description"),
-                "allCauseMortalityComment": adverseEventsModule.get(
-                    "allCauseMortalityComment"
-                ),
+                "allCauseMortalityComment": adverseEventsModule.get("allCauseMortalityComment"),
                 "eventGroups": adverseEventsModule.get("eventGroups", []),
                 "seriousEvents": adverseEventsModule.get("seriousEvents", []),
-                "otherEvents": adverseEventsModule.get("otherEvents", [])
+                "otherEvents": adverseEventsModule.get("otherEvents", []),
             },
-            "limitationsAndCaveats": moreInfoModule.get(
-                "limitationsAndCaveats", {}
-            ),
+            "limitationsAndCaveats": moreInfoModule.get("limitationsAndCaveats", {}),
         }
 
     return extracted
 
 
-def download_clinical_trials(studies: list[dict[str, Any]], output_path: Path, redownload: bool = False) -> list[Path]:
+def download_clinical_trials(
+    studies: list[dict[str, Any]],
+    output_path: Path,
+    redownload: bool = False
+) -> list[Path]:
     paths = []
 
     for study in studies:
-        nct_id = (study.get("protocolSection", {}).get("identificationModule", {}).get("nctId"))
+        nct_id = study.get("protocolSection", {}).get("identificationModule", {}).get("nctId")
 
         if not nct_id:
             continue
@@ -155,18 +161,40 @@ def download_clinical_trials(studies: list[dict[str, Any]], output_path: Path, r
 
     return paths
 
-# Returns a list because user may input multiple terms, conditions, and interventions searches
-def search_clinical_trials(queries: list[dict[str, str | None]], patient_info: str | None = None, hasResults: bool = False, studyType: str | None = None, excludeNctIds: list[str] | None = None, output_path: Path | None = None, excludeDuplicates: bool = False, max_workers: int = 32) -> list[dict[str, Any]]:
+def search_clinical_trials(
+    queries: list[dict[str, str | None]],
+    patient_info: str | None = None,
+    hasResults: bool = False,
+    studyType: str | None = None,
+    excludeNctIds: list[str] | None = None,
+    output_path: Path | None = None,
+    excludeDuplicates: bool = False,
+    num_workers: int = 64
+) -> list[dict[str, Any]]:
 
     if not queries:
         raise ValueError("The 'queries' parameter cannot be empty.")
 
-    def __search_query__(query: dict[str, str | None], patient_info: str | None = None, hasResults: bool = False, studyType: str | None = None, excludeNctIds: list[str] | None = None, output_path: Path | None = None) -> dict[str, Any]:
+    def __search_query__(
+        query: dict[str, str | None],
+        patient_info: str | None = None,
+        hasResults: bool = False,
+        studyType: str | None = None,
+        excludeNctIds: list[str] | None = None,
+        output_path: Path | None = None
+    ) -> dict[str, Any]:
+        
+        fields = ",".join([
+            "protocolSection",
+            "resultsSection",
+            "hasResults",
+        ])
+
         params = {
             "pageSize": 1000,
             "filter.overallStatus": "COMPLETED",
             "countTotal": "true",
-            "format": "json",
+            "fields": fields,
         }
 
         term = query.get("term")
@@ -186,23 +214,23 @@ def search_clinical_trials(queries: list[dict[str, str | None]], patient_info: s
             params["query.patient"] = patient_info
 
         advanced_filters = []
-        
+
         if studyType is not None:
             advanced_filters.append(f"AREA[StudyType]{studyType}")
-            
+
         if excludeNctIds is not None:
             for nct_id in excludeNctIds:
                 advanced_filters.append(f"NOT AREA[NCTId]{nct_id}")
-                
+
         if advanced_filters:
             params["filter.advanced"] = " AND ".join(advanced_filters)
 
         studies = []
         total_count = 0
+        url = "https://clinicaltrials.gov/api/v2/studies"
 
         while True:
-            url = "https://clinicaltrials.gov/api/v2/studies"
-            response = requests.get(url, params=params)
+            response = session.get(url, params=params)
             response.raise_for_status()
             data = response.json()
 
@@ -232,8 +260,8 @@ def search_clinical_trials(queries: list[dict[str, str | None]], patient_info: s
             "studies": studies,
             "paths": paths,
         }
-    
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+
+    with ThreadPoolExecutor(max_workers=num_workers) as executor:
         results = executor.map(
             __search_query__,
             queries,
@@ -270,65 +298,39 @@ def search_clinical_trials(queries: list[dict[str, str | None]], patient_info: s
     return results
 
 
-SEARCH_CLINICAL_TRIALS_TOOL = {
-    "type": "function",
-    "function": {
-        "name": "search_clinical_trials",
-        "description": (
-            "Search completed clinical studies from the ClinicalTrials.gov API "
-            "using one or more search queries. Each query object may specify a "
-            "free-text term, a condition, and/or an intervention."
-        ),
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "queries": {
-                    "type": "array",
-                    "description": "A list of search query objects.",
-                    "minItems": 1,
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "term": {
-                                "type": ["string", "null"],
-                                "description": (
-                                    "Free-text search terms. Examples: "
-                                    "'lung cancer', 'EGFR', 'stage IV melanoma'. "
-                                    "Use null if no free-text term is needed."
-                                )
-                            },
-                            "condition": {
-                                "type": ["string", "null"],
-                                "description": (
-                                    "Disease or condition names. Examples: "
-                                    "'Non-Small Cell Lung Cancer', "
-                                    "'Type 2 Diabetes', 'Breast Cancer'. "
-                                    "Use null if no condition is specified."
-                                )
-                            },
-                            "intervention": {
-                                "type": ["string", "null"],
-                                "description": (
-                                    "Intervention or treatment names. Examples: "
-                                    "'Pembrolizumab', 'Osimertinib', "
-                                    "'CAR-T', 'Radiation Therapy'. "
-                                    "Use null if no intervention is specified."
-                                )
-                            }
-                        },
-                        "additionalProperties": False
-                    }
-                }
-            },
-            "required": ["queries"],
-        },
-    },
-}
-
 if __name__ == "__main__":
-    results = search_clinical_trials(
-        queries=[{"term": "lung cancer", "condition": None, "intervention": None}], 
-        hasResults=True, 
-        studyType='INTERVENTIONAL'
-    )
-    print(results[0])
+    import time
+
+    # Passing multiple queries ensures the thread pool actually has tasks to distribute concurrently
+    test_queries = [
+        {"term": "lung cancer", "condition": None, "intervention": None},
+        {"term": "breast cancer", "condition": None, "intervention": None},
+        {"term": "diabetes", "condition": None, "intervention": None},
+        {"term": "hypertension", "condition": None, "intervention": None},
+        {"term": "asthma", "condition": None, "intervention": None},
+        {"term": "glaucoma", "condition": None, "intervention": None},
+        {"term": "leukemia", "condition": None, "intervention": None},
+        {"term": "melanoma", "condition": None, "intervention": None}
+    ]
+
+    # Test concurrency scaling
+    worker_counts = [1, 2, 4, 8, 16]
+
+    print(f"Benchmarking {len(test_queries)} concurrent queries...\n")
+    print(f"{'Workers':<10} | {'Time (seconds)':<15} | {'Total Studies Retrieved'}")
+    print("-" * 55)
+
+    for workers in worker_counts:
+        start_time = time.perf_counter()
+
+        results = search_clinical_trials(
+            queries=test_queries,
+            hasResults=True,
+            studyType='INTERVENTIONAL',
+            num_workers=workers
+        )
+
+        elapsed_time = time.perf_counter() - start_time
+        total_studies = sum(len(res["studies"]) for res in results)
+
+        print(f"{workers:<10} | {elapsed_time:<15.4f} | {total_studies}")

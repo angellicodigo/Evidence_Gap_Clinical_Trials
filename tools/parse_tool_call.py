@@ -2,7 +2,6 @@ from typing import Dict, Any
 import re
 import json
 
-
 def parse_tool_call(text: str) -> Dict[str, Any]:
     params = {}
     pattern = re.compile(

@@ -1,0 +1,414 @@
+14-alpha Demethylase Inhibitors	N0000020025
+5-Lipoxygenase Inhibitors	N0000175955
+5-alpha Reductase Inhibitors	N0000000126
+AMPA Receptor Antagonists	N0000020016
+APOC-III RNA Antisense Inhibitor	N0000194143
+Acetyl Aldehyde Dehydrogenase Inhibitors	N0000000183
+Acetylcholine Release Inhibitors	N0000175770
+Acetylcholine Transporter Interactions	N0000009955
+Acidifying Activity	N0000175833
+Activin Signaling Inhibitors	N0000194101
+Adenosine Deaminase Inhibitors	N0000000187
+Adenosine Receptor Agonists	N0000175788
+Adenosine Triphosphate-Citrate Lyase Inhibitors	N0000193914
+Adrenergic alpha1-Agonists	N0000009917
+Adrenergic alpha2-Agonists	N0000009918
+Adrenergic alpha2-Antagonists	N0000009920
+Adrenergic beta1-Agonists	N0000009921
+Adrenergic beta1-Antagonists	N0000009923
+Adrenergic beta2-Agonists	N0000009922
+Adrenergic beta2-Antagonists	N0000009924
+Adrenergic beta3-Agonists	N0000185007
+Alcohol Dehydrogenase Inhibitors	N0000000179
+Aldosterone Antagonists	N0000011310
+Alkalinizing Activity	N0000009986
+Alkylating Activity	N0000000236
+Amylase Inhibitors	N0000010274
+Amylin Agonists	N0000020064
+Amyloid Beta-directed Antibody Interactions	N0000193950
+Androgen Receptor Agonists	N0000000146
+Androgen Receptor Antagonists	N0000000243
+Angiopoietin-like 3 Inhibitors	N0000193916
+Angiotensin 2 Type 1 Receptor Antagonists	N0000180999
+Angiotensin-converting Enzyme Inhibitors	N0000000181
+Anthrax Protective Antigen-directed Antibody Interactions	N0000192702
+Antithrombins	N0000000107
+Aromatase Inhibitors	N0000175080
+Aryl Hydrocarbon Receptor Agonists	N0000194019
+B Cell Maturation Antigen-directed Antibody Interactions	N0000194165
+B Lymphocyte Stimulator-directed Antibody Interactions	N0000182636
+Bacterial Neurotoxin Neutralization	N0000184141
+Bcr-Abl Tyrosine Kinase Inhibitors	N0000020009
+Beta-globin Gene Transfer	N0000193972
+Bile Salt Export Pump Inhibitors	N0000193845
+Bile-acid Binding Activity	N0000175365
+Bone Surface Interactions	N0000009958
+Bradykinin B2 Receptor Antagonists	N0000182964
+Breast Cancer Resistance Protein Inhibitors	N0000190113
+Bruton's Tyrosine Kinase Inhibitors	N0000193934
+CD123 Interactions	N0000193865
+CD19 Receptor Interactions	N0000193544
+CD19-directed Antibody Interactions	N0000191422
+CD20-directed Antibody Interactions	N0000175078
+CD22-directed Antibody Interactions	N0000193616
+CD3 Receptor Agonists	N0000175618
+CD3-directed Antibody Interactions	N0000175617
+CD30-directed Antibody Interactions	N0000182966
+CD33-directed Antibody Interactions	N0000175077
+CD38-directed Antibody Interactions	N0000192335
+CD4-directed Antibody Interactions	N0000193805
+CD52-directed Antibody Interactions	N0000175079
+CD80-directed Antibody Interactions	N0000182150
+CD86-directed Antibody Interactions	N0000182151
+CTLA-4-directed Antibody Interactions	N0000182634
+CXC Chemokine Receptor 4 Antagonists	N0000194105
+Calcineurin Inhibitors	N0000175458
+Calcitonin Gene-related Peptide Antagonists	N0000193953
+Calcitonin Gene-related Peptide Receptor Antagonists	N0000193918
+Calcium Chelating Activity	N0000175089
+Cannabinoid Receptor Agonists	N0000181008
+Cannabinoid Receptor Antagonists	N0000181009
+Carbamoyl Phosphate Synthetase 1 Activators	N0000184143
+Carbonic Anhydrase Inhibitors	N0000000235
+Cardiac Myosin Inhibitors	N0000194048
+Catechol O-Methyltransferase Inhibitors	N0000175756
+Chemokine Co-receptor 5 Antagonists	N0000175445
+Chloride Channel Activation Potentiators	N0000184145
+Chloride Channel Activators	N0000175456
+Chloride Channel Antagonists	N0000000224
+Cholinergic Muscarinic Agonists	N0000000104
+Cholinergic Muscarinic Antagonists	N0000000125
+Cholinergic Neuromuscular Nicotinic Agonists	N0000175717
+Cholinergic Neuromuscular Nicotinic Antagonists	N0000175718
+Cholinesterase Inhibitors	N0000000177
+Cholinesterase Reactivators	N0000000080
+Claudin 18.2-directed Antibody Interactions	N0000194106
+Colony Stimulating Factor Receptor Type 1 (CSF-1R) Inhibitors	N0000020036
+Competitive Cholinergic Nicotinic Antagonists	N0000175703
+Competitive Opioid Antagonists	N0000175686
+Complement 1 Inactivators	N0000000086
+Complement 5 Inactivators	N0000175441
+Complement 5a Receptor Antagonists	N0000193974
+Complement C5 Inhibitors	N0000194110
+Complement Factor B Inhibitors	N0000194112
+Complement Factor D Inhibitors	N0000194114
+Copper Chelating Activity	N0000020075
+Corticotropin-releasing Factor Type 1 Receptor Antagonists	N0000194152
+Cyclin-dependent Kinase 4 Inhibitors	N0000193921
+Cyclin-dependent Kinase 6 Inhibitors	N0000193922
+Cyclooxygenase 2 Inhibitors	N0000008288
+Cystine Disulfide Reduction	N0000175549
+Cytochrome P450 11B1 Inhibitors	N0000193936
+Cytochrome P450 17A1 Inhibitors	N0000182632
+Cytochrome P450 1A1 Inhibitors	N0000193954
+Cytochrome P450 1A2 Inducers	N0000191266
+Cytochrome P450 1A2 Inhibitors	N0000182138
+Cytochrome P450 2A6 Inhibitors	N0000193937
+Cytochrome P450 2B6 Inducers	N0000187064
+Cytochrome P450 2B6 Inhibitors	N0000182139
+Cytochrome P450 2C19 Inducers	N0000185607
+Cytochrome P450 2C19 Inhibitors	N0000182140
+Cytochrome P450 2C8 Inducers	N0000187063
+Cytochrome P450 2C8 Inhibitors	N0000187062
+Cytochrome P450 2C9 Inducers	N0000185507
+Cytochrome P450 2C9 Inhibitors	N0000185504
+Cytochrome P450 2D6 Inducers	N0000191267
+Cytochrome P450 2D6 Inhibitors	N0000182137
+Cytochrome P450 2E1 Inducers	N0000193955
+Cytochrome P450 3A4 Inducers	N0000185506
+Cytochrome P450 3A4 Inhibitors	N0000182141
+Cytochrome P450 3A5 Inhibitors	N0000190115
+Cytomegalovirus pUL97 Kinase Inhibitors	N0000193977
+DNA Gyrase Inhibitors	N0000020086
+DNA Methyltransferase Inhibitors	N0000019995
+DNA Polymerase Inhibitors	N0000020060
+DNA Terminase Complex Inhibitors	N0000193801
+DOPA Decarboxylase Inhibitors	N0000175755
+Decarboxylase Inhibitors	N0000175844
+Demulcent Activity	N0000175532
+Dihydrofolate Reductase Inhibitors	N0000000191
+Dihydroorotate Dehydrogenase Inhibitors	N0000185501
+Dipeptidase Inhibitors	N0000175513
+Dipeptidyl Peptidase 4 Inhibitors	N0000175912
+Dopamine Agonists	N0000000117
+Dopamine D2 Antagonists	N0000175799
+Dopamine Uptake Inhibitors	N0000000114
+Dyes	N0000175533
+E3 Ubiquitin Ligase Inhibitors	N0000020085
+Electrolyte Activity	N0000000220
+Endothelin Receptor Antagonists	N0000175364
+Enzymatic Activity	N0000000178
+Enzyme Stabilizers	N0000194078
+Epoxide Hydrolase Inhibitors	N0000192345
+Ergosterol Synthesis Inhibitors	N0000009957
+Estrogen Receptor Agonists	N0000000100
+FMS-like Receptor Tyrosine Kinase 3 (FLT3) Inhibitors	N0000194085
+Factor Xa Inhibitors	N0000175635
+Farnesoid X Receptor Agonists	N0000192560
+Farnesyltransferase Inhibitors	N0000193939
+Fibroblast Growth Factor Receptor Inhibitors	N0000194026
+Fluorescence Contrast Activity	N0000193981
+Focal Adhesion Kinase Inhibitors	N0000194167
+Free Radical Scavenging Activity	N0000000170
+GABA A Agonists	N0000000196
+GABA A Antagonists	N0000000074
+GABA A Receptor Positive Modulators	N0000193997
+GABA B Agonists	N0000000116
+GABA B Antagonists	N0000000229
+GABA B Modulators	N0000000251
+Gamma Secretase Inhibitors	N0000194116
+Gene Editing or Modification	N0000193792
+Glucagon-like Peptide-1 (GLP-1) Agonists	N0000020058
+Glucagon-like Peptide-2 (GLP-2) Agonists	N0000190990
+Glucan Synthase Inhibitors	N0000020027
+Glucocorticoid Receptor Antagonists	N0000000110
+Glucosylceramide Synthase Inhibitors	N0000020019
+Glycine Agonists	N0000000073
+Glycolipid Disialoganglioside-directed Antibody Interactions	N0000191499
+Glycoprotein 100 Peptide-Human Leukocyte Antigen-directed Antibody Interactions	N0000193994
+Gonadotropin Releasing Hormone Receptor Agonists	N0000175654
+Gonadotropin Releasing Hormone Receptor Antagonists	N0000175084
+Growth Hormone Receptor Agonists	N0000010266
+Growth Hormone Receptor Antagonists	N0000010267
+Growth Hormone Secretagogue Receptor Agonists	N0000193786
+Guanylate Cyclase Activators	N0000185499
+Guanylate Cyclase Stimulators	N0000190484
+HCV NS3/4A Protease Inhibitors	N0000182638
+HER1 Antagonists	N0000020010
+HER2-directed Antibody Interactions	N0000194138
+HER3 Antagonists	N0000020012
+HIV 1 Post-attachment Fusion Inhibitors	N0000193807
+HIV Capsid Inhibitors	N0000194086
+HIV Integrase Inhibitors	N0000000127
+HIV Protease Inhibitors	N0000000246
+Hemoglobin S Polymerization Inhibitors	N0000194028
+Heparin Binding Activity	N0000175981
+Histamine Agonists	N0000000112
+Histamine H1 Receptor Antagonists	N0000000190
+Histamine H2 Receptor Antagonists	N0000000151
+Histamine H3 Receptor Antagonists	N0000181003
+Histamine H3 Receptor Inverse Agonists	N0000194051
+Histone Deacetylase Inhibitors	N0000175071
+Hydroxymethylglutaryl-CoA Reductase Inhibitors	N0000000121
+Hydroxyphenylpyruvate Dioxygenase Inhibitors	N0000175808
+Hyperpolarization-activated Cyclic Nucleotide-gated Channel Antagonists	N0000191546
+Hypothalamic Hormone Receptor Agonists	N0000019993
+Hypothalamic Hormone Receptor Antagonists	N0000019994
+Hypoxia-Inducible Factor Prolyl Hydroxylase Inhibitors	N0000194079
+Hypoxia-inducible Factor 2 alpha Inhibitors	N0000193998
+IgE-directed Antibody Interactions	N0000175792
+Ileal Bile Acid Transporter Inhibitors	N0000193958
+Increased Calcium-sensing Receptor Sensitivity	N0000020081
+Insulin Receptor Agonists	N0000000225
+Insulin-like Growth Factor-1 Receptor Inhibitors	N0000193927
+Interferon Inducers	N0000000157
+Interferon gamma Antagonists	N0000193855
+Interleukin 17 Receptor A Antagonists	N0000193279
+Interleukin 2 Receptor Agonists	N0000010280
+Interleukin 2 Receptor Antagonists	N0000010279
+Interleukin 2 Receptor-directed Antibody Interactions	N0000175621
+Interleukin 4 Receptor alpha Antagonists	N0000193341
+Interleukin 5 Receptor alpha-directed Antibody Interactions	N0000193802
+Interleukin 6 Receptor Antagonists	N0000190478
+Interleukin-12 Antagonists	N0000192796
+Interleukin-13 Antagonists	N0000193986
+Interleukin-17A Antagonists	N0000191494
+Interleukin-17A-directed Antibody Interactions	N0000191496
+Interleukin-23 Antagonists	N0000192798
+Interleukin-31 Receptor alpha Antagonists	N0000194122
+Interleukin-36 Receptor Antagonists	N0000194040
+Interleukin-5 Antagonists	N0000191871
+Interleukin-6 Antagonists	N0000191004
+Irrigation	N0000175534
+Isocitrate Dehydrogenase 1 Inhibitors	N0000193988
+Isocitrate Dehydrogenase 2 Inhibitors	N0000193614
+Janus Kinase 3 Inhibitors	N0000194064
+Kallikrein Inhibitors	N0000184151
+Keratinocyte Growth Factor Receptor Agonists	N0000020071
+L-Calcium Channel Receptor Antagonists	N0000020065
+Lead Chelating Activity	N0000175962
+Leukotriene Receptor Antagonists	N0000000083
+Lipase Inhibitors	N0000009916
+Lymphocyte Activation Gene-3 Antagonists	N0000194002
+Lymphocyte Function-Associated Antigen-1 Antagonists	N0000192700
+M2 Protein Inhibitors	N0000175542
+Macrophage Colony Stimulating Factor Receptor Interactions	N0000000081
+Magnesium Ion Exchange Activity	N0000175834
+Magnetic Resonance Contrast Activity	N0000175862
+Melanin Synthesis Inhibitors	N0000175850
+Melanocortin 4 Receptor Agonists	N0000193941
+Melatonin Receptor Agonists	N0000000250
+Menin Inhibitors	N0000194140
+Mesenchymal Epithelial Transition Inhibitors	N0000193929
+Methylating Activity	N0000175804
+Methyltransferase Inhibitors	N0000193931
+Microsomal Triglyceride Transfer Protein Inhibitors	N0000186778
+Mineralocorticoid Receptor Agonists	N0000000094
+Mitogen-Activated Protein Kinase Kinase 1 Inhibitors	N0000193943
+Mitogen-Activated Protein Kinase Kinase 2 Inhibitors	N0000193944
+Monoamine Oxidase-A Inhibitors	N0000175760
+Monoamine Oxidase-B Inhibitors	N0000175761
+Multidrug and Toxin Extrusion Transporter 1 Inhibitors	N0000191423
+Multidrug and Toxin Extrusion Transporter 2 K Inhibitors	N0000193932
+N-Calcium Channel Receptor Antagonists	N0000020069
+Neonatal Fc Receptor Blockers	N0000194005
+Neprilysin Inhibitors	N0000191727
+Neuraminidase Inhibitors	N0000175436
+Neurokinin 1 Antagonists	N0000010262
+Neurokinin 3 Receptor Antagonists	N0000194091
+Nitric Oxide Donors	N0000000120
+Non-Nucleoside Reverse Transcriptase Inhibitors	N0000009948
+Noncompetitive NMDA Receptor Antagonists	N0000181818
+Norepinephrine Uptake Inhibitors	N0000000102
+Nuclear Export Inhibitors	N0000194022
+Nucleoside Reverse Transcriptase Inhibitors	N0000009947
+Oligonucleotide Telomerase Inhibitors	N0000194126
+Opioid kappa Receptor Agonists	N0000194007
+Opioid mu-Receptor Agonists	N0000191866
+Orexin Receptor Antagonists	N0000190998
+Organic Anion Transporter 1 Inhibitors	N0000190110
+Organic Anion Transporter 3 Inhibitors	N0000190111
+Organic Anion Transporting Polypeptide 1B1 Inhibitors	N0000190107
+Organic Anion Transporting Polypeptide 1B3 Inhibitors	N0000190108
+Organic Anion Transporting Polypeptide 2B1 Inhibitors	N0000190109
+Organic Cation Transporter 1 Inhibitors	N0000191265
+Organic Cation Transporter 2 Inhibitors	N0000187061
+Oxidation Activity	N0000175546
+P-Glycoprotein Inducers	N0000191264
+P-Glycoprotein Inhibitors	N0000185503
+P-Selectin Blockers	N0000194031
+P2Y12 Receptor Antagonists	N0000182143
+PCSK9 Inhibitors	N0000191730
+Para-Aminobenzoic Acid Inhibitors	N0000009946
+Parathormone Receptor Agonists	N0000000158
+Partial Cholinergic Nicotinic Agonists	N0000175702
+Partial Opioid Agonists	N0000175685
+Peroxisome Proliferator-activated Receptor alpha Agonists	N0000175375
+Peroxisome Proliferator-activated Receptor delta Agonists	N0000175378
+Peroxisome Proliferator-activated Receptor gamma Agonists	N0000175377
+Phenylalanine Hydroxylase Activators	N0000190482
+Phosphate Chelating Activity	N0000020074
+Phosphodiesterase 3 Inhibitors	N0000175086
+Phosphodiesterase 4 Inhibitors	N0000182960
+Phosphodiesterase 5 Inhibitors	N0000020026
+Phosphoinositide 3-Kinase alpha Inhibitors	N0000194130
+Phosphoinositide 3-Kinase delta Inhibitors	N0000194054
+Plasmin Inhibitors	N0000010264
+Platelet-derived Growth Factor alpha Receptor Inhibitors	N0000020028
+Platelet-derived Growth Factor beta Receptor Inhibitors	N0000020029
+Plutonium Chelating Activity	N0000020076
+Poly(ADP-Ribose) Polymerase Inhibitors	N0000191622
+Polymerase Acidic Endonuclease Inhibitors	N0000193853
+Positron Emitting Activity	N0000175869
+Potassium Channel Antagonists	N0000175448
+Potassium Channel Openers	N0000182728
+Potassium Ion Binding Activity	N0000178377
+Potassium Ion Exchange Activity	N0000175357
+Progestational Hormone Receptor Antagonists	N0000000115
+Programmed Death Ligand-1 Antagonists	N0000193337
+Programmed Death Ligand-1-directed Antibody Interactions	N0000193336
+Programmed Death Receptor-1-directed Antibody Interactions	N0000191259
+Proline-rich Tyrosine Kinase 2 Inhibitors	N0000194169
+Prostacyclin Receptor Agonists	N0000020068
+Prostaglandin E2 Receptor Agonists	N0000194042
+Prostaglandin Receptor Antagonists	N0000000108
+Protease Activators	N0000194171
+Protease-activated Receptor-1 Antagonists	N0000190995
+Proteasome Inhibitors	N0000175075
+Proto-Oncogene Tyrosine-Protein Kinase ROS1 Inhibitors	N0000194093
+Pyruvate Kinase Activators	N0000194009
+RANK Ligand Blocking Activity	N0000187054
+RNA Replicase Inhibitors	N0000191258
+RNA Synthetase Inhibitors	N0000175516
+Rearranged during Transfection (RET) Inhibitors	N0000193947
+Renin Inhibitors	N0000175899
+Rho Kinase Inhibitors	N0000193789
+Ribonucleotide Reductase Inhibitors	N0000000212
+SLAMF7-directed Antibody Interactions	N0000192337
+Sclerosing Activity	N0000020024
+Secretin Receptor Agonists	N0000020078
+Selective Estrogen Receptor Modulators	N0000000168
+Selective Progesterone Receptor Modulators	N0000191262
+Serotonin 1b Receptor Agonists	N0000175763
+Serotonin 1d Receptor Agonists	N0000175764
+Serotonin 2c Receptor Agonists	N0000185009
+Serotonin 3 Receptor Antagonists	N0000175817
+Serotonin 4 Receptor Agonists	N0000193870
+Serotonin 4 Receptor Antagonists	N0000175816
+Serotonin 5HT-3 Antagonists	N0000000090
+Serotonin Uptake Inhibitors	N0000000109
+Sigma-1 Receptor Agonists	N0000182147
+Sigma-1 Receptor Antagonists	N0000182148
+Smoothened Receptor Antagonists	N0000184148
+Sodium Channel Antagonists	N0000181004
+Sodium Chloride Symporter Inhibitors	N0000181005
+Sodium Potassium Chloride Symporter Inhibitors	N0000181006
+Sodium-Glucose Transporter 2 Inhibitors	N0000187058
+Sodium-Hydrogen Exchanger 3 Inhibitors	N0000194057
+Sodium-Potassium Exchanging ATPase Interactions	N0000000238
+Somatotropin Receptor Agonists	N0000000217
+Sphingosine 1-Phosphate Receptor Modulators	N0000181815
+Squalene Monooxygenase Inhibitors	N0000010265
+Stem Cell Factor (KIT) Receptor Inhibitors	N0000020034
+Stool Bulking Activity	N0000000075
+Structural Macromolecules	N0000000228
+Surfactant Activity	N0000000079
+Survival of Motor Neuron 2 Splicing Modifiers	N0000194060
+T-Calcium Channel Receptor Antagonists	N0000020066
+TRPM8 Thermoreceptor Agonists	N0000194173
+Thrombin Inhibitors	N0000009963
+Thrombopoietin Receptor Agonists	N0000175968
+Thymic Stromal Lymphopoietin Blockers	N0000194011
+Thymidine Phosphorylase Inhibitors	N0000191869
+Thymidylate Synthetase Inhibitors	N0000000098
+Thyroid Hormone Receptor beta Agonists	N0000194132
+Tissue Factor Pathway Inhibitor Antagonists	N0000194161
+Tissue Plasminogen Activator Inhibitors	N0000010263
+Tissue Plasminogen Activators	N0000000241
+Topoisomerase 4 Inhibitors	N0000020087
+Transpeptidase Inhibitors	N0000010215
+Transthyretin Stabilizers	N0000194135
+Tropomyosin Receptor Tyrosine Kinase A Inhibitors	N0000194094
+Tropomyosin Receptor Tyrosine Kinase B Inhibitors	N0000194095
+Tropomyosin Receptor Tyrosine Kinase C Inhibitors	N0000194096
+Tryptophan Hydroxylase Inhibitors	N0000193302
+Tumor Necrosis Factor alpha Receptor Blocking Activity	N0000175446
+Tumor Necrosis Factor beta Receptor Blocking Activity	N0000175447
+Type I interferon Receptor Antagonists	N0000193968
+Type II RAF Kinase Inhibitors	N0000194133
+UGT1A1 Inducers	N0000194036
+UGT1A1 Inhibitors	N0000191272
+UGT1A3 Inhibitors	N0000191275
+UGT1A4 Inhibitors	N0000191276
+UGT1A6 Inhibitors	N0000191277
+UGT1A9 Inhibitors	N0000191278
+UGT2B15 Inhibitors	N0000191274
+UGT2B7 Inhibitors	N0000191273
+Ultrasound Contrast Activity	N0000010259
+Ultraviolet A Radiation Absorption	N0000010218
+Ultraviolet B Radiation Absorption	N0000010219
+Uncompetitive NMDA Receptor Antagonists	N0000181819
+Uncouplers	N0000000155
+Unknown Cellular or Molecular Interaction	N0000009915
+Urate Transporter 1 Inhibitors	N0000192340
+Urease Inhibitors	N0000175087
+VEGFR1 Inhibitors	N0000020031
+VEGFR2 Inhibitors	N0000020032
+VEGFR3 Inhibitors	N0000020033
+Vascular Endothelial Growth Factor Inhibitors	N0000193542
+Vascular Endothelial Growth Factor-directed Antibody Interactions	N0000178291
+Vasopressin Receptor Agonists	N0000194046
+Vasopressin V1 Receptor Antagonists	N0000193179
+Vasopressin V2 Receptor Antagonists	N0000193178
+Venom Neutralization	N0000184010
+Vesicular Monoamine Transporter 2 Inhibitors	N0000190855
+Viral Envelope Wrapping Protein Inhibitors	N0000193860
+Virus Neutralization	N0000184009
+Vitamin K Epoxide Reductase Inhibitors	N0000000164
+X-Ray Contrast Activity	N0000010258
+Xanthine Oxidase Inhibitors	N0000000206
+Zaire Ebolavirus Glycoprotein-directed Antibody Interactions	N0000194037
+alpha Glucosidase Inhibitors	N0000000166
+beta Lactamase Inhibitors	N0000000202
+beta Tubulin Interactions	N0000010260
+mTOR Inhibitors	N0000175624
