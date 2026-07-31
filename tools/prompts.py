@@ -153,8 +153,6 @@ def generate_trials_prompt(patient_note: dict[str, str], trial: dict[str, Any]) 
 
                 1. Read and understand the patient's condition, the trial's goals, inclusion/exclusion criteria, and results of the trials.
                 2. Assign a "relevanceScore", an integer between 0 and 100 that represents how relevant this trial is to the patient.
-                Only include the integer. For example, "80". Do not format your score in a different way, such as "80/100", "eighty", "80." (with 
-                a period), or "\\n80"
                     - 0 = completely unrelated
                     - 50 = partially related
                     - 100 = highly relevant

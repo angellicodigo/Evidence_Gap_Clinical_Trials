@@ -235,7 +235,7 @@ def query_trials_task(model: ActorPool, sampling_params: SamplingParams, patient
             patient_all_trials.append(trials)
 
         # This part of the code is formatting the output for dump()
-        separator = f"\n\n{'=' * 80}\n\n"
+        separator = f"\n\n{'=' * 200}\n\n"
         grouped_raw_outputs.append(separator.join(patient_raw_outputs))
         all_trials.append(patient_all_trials)
         num_duplicate_trials.append(patient_duplicates)
@@ -285,6 +285,7 @@ def generate_trials_task(model: ActorPool, sampling_params: SamplingParams, pati
         rxclass = meta_info.get("rxclass")
         drug = meta_info.get("drug")
         rela = meta_info.get("rela")
+        query_dict = meta_info.get("query")
         
         if not rxclass or not drug:
             raise ValueError(f"""
@@ -299,7 +300,8 @@ def generate_trials_task(model: ActorPool, sampling_params: SamplingParams, pati
             "extraction": str(note_id),
             "rxclass": rxclass,
             "drug": drug,
-            "rela": rela
+            "rela": rela,
+            "query": query_dict
         }
         
         meta_dict = {
@@ -365,7 +367,7 @@ def generate_trials_task(model: ActorPool, sampling_params: SamplingParams, pati
     output_idx = 0
     for count in trial_counts:
         patient_raw_outputs = raw_outputs[output_idx : output_idx + count]
-        separator = f"\n\n{'=' * 80}\n\n"
+        separator = f"\n\n{'=' * 200}\n\n"
         grouped_raw_outputs.append(separator.join(patient_raw_outputs))
         output_idx += count
     

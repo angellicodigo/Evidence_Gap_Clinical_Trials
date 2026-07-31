@@ -66,8 +66,8 @@ def fetch_drug_members(patient_notes: list[dict[str, str]], selected_classes: li
         ignoreNoneRela=True
     )
     elapsed = time.perf_counter() - start_time
-    
-    log(patient_notes, f"Successfully retrieved {len(drug_members)} drug members.", contents=drug_members, stage="DRUGS")
+    total_drug_members = sum(len(sublist) for sublist in drug_members)
+    log(patient_notes, f"Successfully retrieved {total_drug_members} drug members.", contents=drug_members, stage="DRUGS")
     log(patient_notes, f"This task took an average time of {(elapsed / len(patient_notes)):.2f} seconds.", stage="DRUGS")
     return drug_members
 
@@ -92,7 +92,7 @@ def query_trials(model: ActorPool, sampling_params: SamplingParams, patient_note
         trial_counts_summary.append(summary_msg)
 
     log(patient_notes, "Successfully queried clinical trials.", contents=trial_counts_summary, stage="TRIALS")
-    log(patient_notes, "For each query, we record a tuple (unique_num_trials, total_num_trials)", contents=num_duplicate_trials, stage="TRIALS")
+    log(patient_notes, "For each drug from RxClass, recorded the aggregated unique and total trial counts for each evaluated drug (unique_num_trials, total_num_trials):", contents=num_duplicate_trials, stage="TRIALS")
     log(patient_notes, f"The time it took to query ClinicalTrials.gov took an average time of {(query_elapsed / len(patient_notes)):.2f} seconds.", stage="TRIALS")
     dump(patient_notes, query_raw_outputs)
     log(patient_notes, "Updated raw_output.txt.", stage="TRIALS")
@@ -125,6 +125,7 @@ def evaluate_trials(model: ActorPool, sampling_params: SamplingParams, patient_n
                 )
 
             for query_res in drug_query_results:
+                query_dict = query_res.get("query")
                 for raw_study in query_res.get("studies", []):
                     nct_id = get_nct_id(raw_study)
                     
@@ -134,7 +135,8 @@ def evaluate_trials(model: ActorPool, sampling_params: SamplingParams, patient_n
                         extracted_study["meta"] = {
                             "rxclass": rxclass_name,
                             "drug": drug_name,
-                            "rela": rela  
+                            "rela": rela,  
+                            "query": query_dict
                         }
                         patient_studies.append(extracted_study)
                         
@@ -150,7 +152,7 @@ def evaluate_trials(model: ActorPool, sampling_params: SamplingParams, patient_n
     )
     
     log(patient_notes, "Successfully evaluated clinical trials relevance.", stage="EVALUATE")
-    log(patient_notes, f"This evaluation task took an average time of {(eval_elapsed / len(patient_notes)):.2f} seconds.", stage="EVALUATION")
+    log(patient_notes, f"This task took an average time of {(eval_elapsed / len(patient_notes)):.2f} seconds.", stage="EVALUATE")
     dump(patient_notes, eval_raw_outputs)
     log(patient_notes, "Updated raw_output.txt.", stage="EVALUATE")
     
