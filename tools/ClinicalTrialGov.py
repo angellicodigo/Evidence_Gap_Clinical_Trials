@@ -6,7 +6,6 @@ import json
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
-import time
 
 retry_strategy = Retry(
     total=8,                          # up to 8 retries per request
@@ -16,7 +15,7 @@ retry_strategy = Retry(
     respect_retry_after_header=True,  # honor the server's Retry-After header if it sends one
 )
 
-max_connections = 8
+max_connections = 4
 session = requests.Session()
 adapter = HTTPAdapter(
     max_retries=retry_strategy, 
@@ -138,11 +137,7 @@ def extract_clinical_info(study: dict[str, Any]) -> dict[str, Any]:
     return extracted
 
 
-def download_clinical_trials(
-    studies: list[dict[str, Any]],
-    output_path: Path,
-    redownload: bool = False
-) -> list[Path]:
+def download_clinical_trials(studies: list[dict[str, Any]], output_path: Path, redownload: bool = False) -> list[Path]:
     paths = []
 
     for study in studies:
@@ -166,6 +161,7 @@ def download_clinical_trials(
 
     return paths
 
+# From my own testing, setting num_workers = 4 caused an API rate limit error
 def search_clinical_trials(
     queries: list[dict[str, str | None]],
     patient_info: str | None = None,
@@ -248,7 +244,6 @@ def search_clinical_trials(
         url = "https://clinicaltrials.gov/api/v2/studies"
 
         while True:
-            time.sleep(0.1) # Help prevent getting API rate limit error
             response = session.get(url, params=params)
             response.raise_for_status()
 
