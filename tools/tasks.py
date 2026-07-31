@@ -3,7 +3,10 @@ from typing import Any
 from ray.util import ActorPool
 from vllm import SamplingParams
 from tools.parse_tool_call import parse_tool_call
-from tools.prompts import select_rxclass_prompt, SELECT_RXCLASS_TOOL, RXCLASS_DRUGS_PATH
+from tools.prompts import select_rxclass_prompt, RXCLASS_DRUGS_PATH, query_trials_prompt, generate_trials_prompt
+from tools.ClinicalTrialGov import search_clinical_trials, count_num_trials
+from pathlib import Path
+import json
 
 RXCLASS_MAPPING = {}
 for txt_file in RXCLASS_DRUGS_PATH.glob("*.txt"):
@@ -28,7 +31,7 @@ for txt_file in RXCLASS_DRUGS_PATH.glob("*.txt"):
                 "classId": class_id,
             }
 
-def batch_chat(model: ActorPool, sampling_params: SamplingParams, prompts: list[list[dict[str, str]]], tools: list[dict[str, Any]] | None = None, batch_size: int = 256) -> list[str]:
+def batch_chat(model: ActorPool, sampling_params: SamplingParams, prompts: list[list[dict[str, str]]], tools: list[dict[str, Any]] | None = None, batch_size: int = 64) -> list[str]:
     batches = [prompts[i:i + batch_size] for i in range(0, len(prompts), batch_size)]
     
     worker_outputs = list(model.map(
@@ -45,6 +48,24 @@ def batch_chat(model: ActorPool, sampling_params: SamplingParams, prompts: list[
 
     return responses
 
+SELECT_RXCLASS_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "select_rxclass",
+        "description": "Select the most relevant RxClass.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "class": {
+                    "type": "string",
+                    "description": "The exact name of the selected RxClass class."
+                }
+            },
+            "required": ["class"],
+            "additionalProperties": False,
+        },
+    },
+}
 
 def select_rxclass_task(model: ActorPool, sampling_params: SamplingParams, patient_notes: list[dict[str, str]]):
     prompts = []
@@ -82,10 +103,15 @@ SEARCH_CLINICAL_TRIALS_TOOL = {
     "type": "function",
     "function": {
         "name": "search_clinical_trials",
-        "description": (
-            "Search completed clinical studies from the ClinicalTrials.gov API "
-            "using one or more search queries. Each query object may specify a "
-            "free-text term, a condition, and/or an intervention."
+        "description": ("""
+            Search for clinical studies from ClinicalTrials.gov using one or more
+            search queries. Each query object may specifc a term, condition, and/or
+            intervention. Only use English spellings and double check your spelling.
+            Put each search term into the filter where it fits the best. For example, 
+            put a disease term in the Condition/disease filter and a drug term in the 
+            Intervention/treatment filter. Limit the number of search terms you use in each filter.
+            Start by filling in the filters for the information most important to you
+            """
         ),
         "parameters": {
             "type": "object",
@@ -98,28 +124,50 @@ SEARCH_CLINICAL_TRIALS_TOOL = {
                         "properties": {
                             "term": {
                                 "type": ["string", "null"],
-                                "description": (
-                                    "Free-text search terms. Examples: "
-                                    "'lung cancer', 'EGFR', 'stage IV melanoma'. "
-                                    "Use null if no free-text term is needed."
+                                "description": ("""
+                                        This filter is a tool to help focus your search for clinical studies 
+                                        using terms that don't fit in the other basic filters. For example, 
+                                        you can use this filter to search for studies with a specific word in 
+                                        the study title or study description. Other examples of terms you can 
+                                        use in this field include:
+
+                                        - The NCT number
+                                        - The acronym for a study
+                                        - A biomarker or gene name
+                                        - An outcome measure
+                                                
+                                        Avoid using this filter to type in several different search terms or 
+                                        terms that fit better in the other basic filters.
+                                                
+                                        Note that the term field searches everything. If you search for "cancer" for term, you'll 
+                                        get trials where cancer appears in the title, conditions, interventions, description, 
+                                        eligibility criteria -- everywhere.
+                                                
+                                        Use null if no free-text term is needed.
+                                    """
                                 )
                             },
                             "condition": {
                                 "type": ["string", "null"],
-                                "description": (
-                                    "Disease or condition names. Examples: "
-                                    "'Non-Small Cell Lung Cancer', "
-                                    "'Type 2 Diabetes', 'Breast Cancer'. "
-                                    "Use null if no condition is specified."
+                                "description": ("""
+                                    Use this field to search for studies related to a condition, disease, disorder, 
+                                    syndrome, illness, or injury (For example, breast cancer or high blood pressure). 
+                                    If you are searching for studies about more than one condition, 
+                                    enter each condition separately.
+                                                
+                                    Use null if no condition is specified.
+                                    """
                                 )
                             },
                             "intervention": {
                                 "type": ["string", "null"],
-                                "description": (
-                                    "Intervention or treatment names. Examples: "
-                                    "'Pembrolizumab', 'Osimertinib', "
-                                    "'CAR-T', 'Radiation Therapy'. "
-                                    "Use null if no intervention is specified."
+                                "description": ("""
+                                    Use this field to search for studies that use a specific drug, 
+                                    medical device, procedure, or lifestyle change (For example, 
+                                    radiation therapy or low-fat diet).
+                                                
+                                    Use null if no intervention is specified.
+                                    """
                                 )
                             }
                         },
@@ -132,256 +180,186 @@ SEARCH_CLINICAL_TRIALS_TOOL = {
     },
 }
 
-def query_trials_task(model: ActorPool, sampling_params: SamplingParams, patient_notes: list[dict[str, str]], drug_members: list[list[dict[str, Any]]]):
+def query_trials_task(model: ActorPool, sampling_params: SamplingParams, patient_notes: list[dict[str, str]], drug_members: list[list[dict[str, Any]]], output_path: Path):
     prompts = []
-    for drug_member in drug_members:
-        prompts.append(query_trials_prompt(drug_member))
+    # Keeps track of how many drugs per RxClass 
+    drug_counts = []
+    
+    # Map every drug to a prompt, tracking counts per patient
+    for i in range(len(patient_notes)):
+        patient_drugs = drug_members[i]
+        drug_counts.append(len(patient_drugs))
+        for drug in patient_drugs:
+            prompts.append(query_trials_prompt(patient_notes[i], drug))
 
-    start_time = time.perf_counter()
     raw_outputs = batch_chat(
         model,
         sampling_params,
         prompts,
-        [SELECT_RXCLASS_TOOL]
+        [SEARCH_CLINICAL_TRIALS_TOOL]
     )
-    elapsed = time.perf_counter() - start_time
+    
+    all_trials = []
+    num_duplicate_trials = []
+    grouped_raw_outputs = []
+    output_idx = 0
 
-    selected_classes = []
+    # Re-group outputs and query results by patient
+    start_time = time.perf_counter()
 
-    for response in raw_outputs:
-        tool_params = parse_tool_call(response)
-        class_name = tool_params["class"]
+    for count in drug_counts:
+        # List slicing to grab the chunk of LLM responses belonging to the patient
+        patient_raw_outputs = raw_outputs[output_idx : output_idx + count]
+        patient_all_trials = []
+        patient_duplicates = []
+        
+        for response in patient_raw_outputs:
+            tool_params = parse_tool_call(response)
+            queries = tool_params.get("queries")
 
-        # Use the O(1) dictionary lookup instead of nested loops
-        match = RXCLASS_MAPPING.get(class_name)
+            if not queries:
+                raise ValueError(
+                    f"This response from Nemotron gave an error:\n{response}"
+                    )
 
-        if not match:
-            raise FileNotFoundError(
-                f"RxClass '{class_name}' does not exist in any RxClass .txt file."
+            trials = search_clinical_trials(
+                queries, 
+                hasResults=True, 
+                studyType="INTERVENTIONAL", 
+                output_path=output_path
             )
 
-        selected_classes.append(match)
+            unique_num_trials, total_num_trials = count_num_trials(trials)
+            
+            patient_duplicates.append((unique_num_trials, total_num_trials))
+            patient_all_trials.append(trials)
 
-    return selected_classes, raw_outputs, elapsed
-
-# def query_trials_task(class_name: str, rela_source: str = "MEDRT") -> list[dict[str, Any]]:
-
-#     members_dict = getClassMembers(classId=class_id, relaSource=rela_source)
-    
-#     return [
-#         {
-#             "rxcui": concept.get("rxcui"),
-#             "name": concept.get("name"),
-#             "rela": rela,
-#             "relaSource": rela_source
-#         }
-#         for rela, member_list in members_dict.items()
-#         for item in member_list
-#         if (concept := item.get("minConcept")) and concept.get("rxcui")
-#     ]
-
-
-# def generate_queries_task(
-#     model: ActorPool,
-#     sampling_params: SamplingParams,
-#     drugs: list[dict[str, Any]],
-#     class_name: str,
-#     patient_note: str,
-#     batch_size: int = 64
-# ) -> tuple[dict[str, dict[str, Any]], list[str], float]:
-#     """
-#     Task 3: Generates 5 search queries per drug in parallel batches across Ray actors.
-#     Returns: (drug_queries_map, list_of_raw_llm_responses, elapsed_time)
-#     """
-#     start_time = time.perf_counter()
-#     prompts = [
-#         prompt_suggest_drug_queries(
-#             drug_name=d["name"], rxcui=d["rxcui"], class_name=class_name, patient_note=patient_note, num_queries=5
-#         )
-#         for d in drugs
-#     ]
-
-#     raw_responses = run_batch_chat(
-#         model=model,
-#         sampling_params=sampling_params,
-#         prompts=prompts,
-#         tools=[SEARCH_CLINICAL_TRIALS_TOOL],
-#         batch_size=batch_size
-#     )
-
-#     drug_queries_map = {}
-#     for drug, raw_text in zip(drugs, raw_responses):
-#         parsed = parse_tool_call(raw_text)
-#         queries = parsed.get("queries", [])[:5] # Restrict to exactly 5 queries
-#         drug_queries_map[drug["rxcui"]] = {
-#             "drug_name": drug["name"],
-#             "queries": queries
-#         }
-
-#     elapsed = time.perf_counter() - start_time
-#     return drug_queries_map, raw_responses, elapsed
-
-
-# def search_trials_task(
-#     drug_queries_map: dict[str, dict[str, Any]],
-#     trial_store_path: Path
-# ) -> tuple[dict[str, Path], list[str], float]:
-#     """
-#     Task 4: Pulls clinical trials sequentially (max_workers=1) and builds metrics.
-#     Returns: (unique_trials_map, metric_logs, elapsed_time)
-#     """
-#     start_time = time.perf_counter()
-#     unique_trials: dict[str, Path] = {}
-#     metric_logs: list[str] = []
-
-#     total_pulled_overall = 0
-#     total_duplicates_overall = 0
-
-#     for rxcui, info in drug_queries_map.items():
-#         queries = info["queries"]
-#         drug_name = info["drug_name"]
-#         if not queries:
-#             continue
-
-#         # Sequential trial fetching (max_workers=1 disables parallel thread pool execution)
-#         search_results = search_clinical_trials(
-#             queries=queries,
-#             hasResults=True,
-#             studyType="INTERVENTIONAL",
-#             output_path=trial_store_path,
-#             excludeDuplicates=False,
-#             max_workers=1 
-#         )
-
-#         drug_pulled = 0
-#         drug_seen_ncts = set()
-
-#         for q_idx, res in enumerate(search_results):
-#             q_studies = res.get("studies", [])
-#             q_paths = res.get("paths", [])
-#             drug_pulled += len(q_studies)
-
-#             q_duplicates = 0
-#             for path in q_paths:
-#                 nctid = path.stem
-#                 if nctid in drug_seen_ncts:
-#                     q_duplicates += 1
-#                 else:
-#                     drug_seen_ncts.add(nctid)
-#                     unique_trials[nctid] = path
-
-#             metric_logs.append(
-#                 f"[METRICS] Drug: {drug_name} | Query #{q_idx+1}: {queries[q_idx]} -> "
-#                 f"Pulled: {len(q_studies)} | Duplicates in query: {q_duplicates}"
-#             )
-
-#         drug_unique_count = len(drug_seen_ncts)
-#         drug_duplicates = drug_pulled - drug_unique_count
-#         total_pulled_overall += drug_pulled
-#         total_duplicates_overall += drug_duplicates
-
-#         metric_logs.append(
-#             f"--> [DRUG SUMMARY] {drug_name}: Pulled = {drug_pulled}, "
-#             f"Unique = {drug_unique_count}, Duplicates = {drug_duplicates}\n"
-#         )
-
-#     elapsed = time.perf_counter() - start_time
-#     metric_logs.append(
-#         f"[SEARCH OVERALL] Pulled = {total_pulled_overall} | "
-#         f"Unique = {len(unique_trials)} | Duplicates = {total_duplicates_overall}"
-#     )
-
-#     return unique_trials, metric_logs, elapsed
-
-
-# def evaluate_trials_task(
-#     model: ActorPool,
-#     sampling_params: SamplingParams,
-#     unique_trials: dict[str, Path],
-#     patient_note: str,
-#     patient_note_id: str,
-#     drug_name: str,
-#     batch_size: int = 64
-# ) -> tuple[list[dict[str, Any]], list[str], float]:
-#     """
-#     Task 5: Evaluates retrieved clinical trials in parallel batches via Ray.
-#     Returns: (list_of_eval_results, list_of_raw_llm_responses, elapsed_time)
-#     """
-#     start_time = time.perf_counter()
-#     nctids = list(unique_trials.keys())
-    
-#     prompts = [
-#         prompt_evaluate_trial(
-#             json.loads(unique_trials[nctid].read_text(encoding="utf-8")),
-#             drug_name,
-#             patient_note
-#         )
-#         for nctid in nctids
-#     ]
-
-#     if not prompts:
-#         return [], [], 0.0
-
-#     raw_responses = run_batch_chat(
-#         model=model,
-#         sampling_params=sampling_params,
-#         prompts=prompts,
-#         tools=[EVALUATE_TRIAL_TOOL],
-#         batch_size=batch_size
-#     )
-
-#     evaluations = []
-#     for nctid, raw_text in zip(nctids, raw_responses):
-#         trial_data = json.loads(unique_trials[nctid].read_text(encoding="utf-8"))
-#         parsed = parse_tool_call(raw_text)
-
-#         evaluations.append({
-#             "nctid": nctid,
-#             "json_data": {
-#                 "trial": trial_data.get("briefTitle") or trial_data.get("officialTitle") or "Unknown Title",
-#                 "provenance": "",
-#                 "patient_note_id": patient_note_id,
-#                 "relevanceScore": parsed.get("relevanceScore", 0),
-#                 "reasoning": parsed.get("reasoning", "No reasoning provided.")
-#             }
-#         })
-
-#     elapsed = time.perf_counter() - start_time
-#     return evaluations, raw_responses, elapsed
-
-
-# # =====================================================================
-# # Side-Effect Layer (IO, Logging, and Persistence)
-# # =====================================================================
-
-# def persist_results_and_logs(
-#     evaluations: list[dict[str, Any]],
-#     raw_logs: list[str],
-#     metric_logs: list[str],
-#     output_dir: Path,
-#     log_path: Path
-# ) -> None:
-#     """
-#     Isolated Side-Effect Function: Handles disk writes for log files, raw output texts, and output JSON files.
-#     """
-#     output_dir.mkdir(parents=True, exist_ok=True)
-#     log_path.parent.mkdir(parents=True, exist_ok=True)
-
-#     # Write trial output JSON files: filename is the nctid
-#     for item in evaluations:
-#         nctid = item["nctid"]
-#         out_path = output_dir / f"{nctid}.json"
-#         with open(out_path, "w", encoding="utf-8") as f:
-#             json.dump(item["json_data"], f, indent=2)
-
-#     # Append metrics and raw logs
-#     with open(log_path, "a", encoding="utf-8") as f:
-#         f.write("\n=== METRICS LOGS ===\n")
-#         for line in metric_logs:
-#             f.write(line + "\n")
-
-#         f.write("\n=== RAW NEMOTRON LOGS ===\n")
-#         for raw in raw_logs:
-#             f.write(raw + "\n" + "=" * 60 + "\n")
+        # Join the raw LLM responses so dump() works cleanly per patient note
+        grouped_raw_outputs.append("\n\n==========================\n\n".join(patient_raw_outputs))
+        all_trials.append(patient_all_trials)
+        num_duplicate_trials.append(patient_duplicates)
         
-#         f.flush()
+        output_idx += count
+
+    elapsed = time.perf_counter() - start_time
+    
+    return all_trials, num_duplicate_trials, grouped_raw_outputs, elapsed
+
+EVALUATE_RELEVANCE_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "evaluate_relevance",
+        "description": "Evaluate the relevance of a clinical trial to a patient note.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "relevanceScore": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100,
+                    "description": "An integer score from 0 to 100 indicating how relevant this trial is to the patient."
+                },
+                "reasoning": {
+                    "type": "string",
+                    "description": "Detailed explanation for why this relevance score was assigned."
+                }
+            },
+            "required": ["relevanceScore", "reasoning"],
+            "additionalProperties": False,
+        },
+    },
+}
+
+def generate_trials_task(model: ActorPool, sampling_params: SamplingParams, patient_notes: list[dict[str, str]], trials: list[list[dict[str, Any]]], output_path: Path):
+    prompts = []
+    metadata = []
+    
+    # 1. Prepare prompts and track metadata
+    for i, patient_note in enumerate(patient_notes):
+        note_id = patient_note.get("source", {}).get("note_id")
+        patient_trials = trials[i]
+        
+        for trial in patient_trials:
+            nct_id = trial.get("nctId")
+            if not nct_id:
+                nct_id = trial.get("protocolSection", {}).get("identificationModule", {}).get("nctId")
+            
+            if not nct_id:
+                continue 
+
+            trial_content_path = str(output_path / f"{nct_id}.json")
+
+            # Read rxclass and drug from attached metadata
+            meta_info = trial.get("_meta", {})
+            rxclass = meta_info.get("rxclass", "Unknown Class")
+            drug = meta_info.get("drug", "Unknown Drug")
+            
+            # Format providence as {"extraction": note_id, "rxclass": rxclass, "drug": drug}
+            providence_entry = {
+                "extraction": str(note_id),
+                "rxclass": rxclass,
+                "drug": drug
+            }
+            
+            metadata.append({
+                "nct_id": nct_id,
+                "note_id": str(note_id),
+                "trial_path": trial_content_path,
+                "providence": providence_entry
+            })
+            
+            prompts.append(generate_trials_prompt(patient_note, trial))
+    
+    # 2. Run LLM Batch Inference
+    start_time = time.perf_counter()
+    
+    raw_outputs = batch_chat(
+        model,
+        sampling_params,
+        prompts,
+        [EVALUATE_RELEVANCE_TOOL]
+    )
+    
+    elapsed = time.perf_counter() - start_time
+    
+    # 3. Aggregate and Save Results by Trial (nct_id)
+    aggregated_results = {}
+    output_path.mkdir(parents=True, exist_ok=True)
+    
+    for meta, response in zip(metadata, raw_outputs):
+        nct_id = meta["nct_id"]
+        
+        tool_params = parse_tool_call(response)
+        relevance_score = tool_params.get("relevanceScore", 0)
+        reasoning = tool_params.get("reasoning", "")
+        
+        file_path = output_path / f"{nct_id}.json"
+        
+        if nct_id not in aggregated_results:
+            if file_path.exists():
+                with file_path.open("r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    if "reasoning" not in data:
+                        data["reasoning"] = []
+                    aggregated_results[nct_id] = data
+            else:
+                aggregated_results[nct_id] = {
+                    "trial": meta["trial_path"],
+                    "providence": [],
+                    "notes": [],
+                    "relevance": [],
+                    "reasoning": []
+                }
+                
+        aggregated_results[nct_id]["providence"].append(meta["providence"])
+        aggregated_results[nct_id]["notes"].append(meta["note_id"])
+        aggregated_results[nct_id]["relevance"].append(relevance_score)
+        aggregated_results[nct_id]["reasoning"].append(reasoning)
+        
+    # 4. Write all aggregated records back to disk
+    for nct_id, data in aggregated_results.items():
+        file_path = output_path / f"{nct_id}.json"
+        with file_path.open("w", encoding="utf-8") as f:
+            json.dump(data, f, indent=4)
+            
+    return aggregated_results, raw_outputs, elapsed

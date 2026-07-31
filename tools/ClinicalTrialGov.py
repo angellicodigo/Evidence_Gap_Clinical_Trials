@@ -6,18 +6,23 @@ import json
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+import time
 
 retry_strategy = Retry(
     total=8,                          # up to 8 retries per request
     backoff_factor=1,                 # sleeps 1s, 2s, 4s, 8s, 16s...
-    status_forcelist=[429, 500, 502, 503, 504],
+    status_forcelist=[500, 502, 503, 504],
     allowed_methods=["GET"],
     respect_retry_after_header=True,  # honor the server's Retry-After header if it sends one
 )
 
-max_connections = 64
+max_connections = 8
 session = requests.Session()
-adapter = HTTPAdapter(pool_connections=max_connections, pool_maxsize=max_connections)
+adapter = HTTPAdapter(
+    max_retries=retry_strategy, 
+    pool_connections=max_connections, 
+    pool_maxsize=max_connections
+)
 session.mount("https://", adapter)
 session.mount("http://", adapter)
 
@@ -169,11 +174,18 @@ def search_clinical_trials(
     excludeNctIds: list[str] | None = None,
     output_path: Path | None = None,
     excludeDuplicates: bool = False,
-    num_workers: int = 64
+    num_workers: int = 2
 ) -> list[dict[str, Any]]:
 
     if not queries:
         raise ValueError("The 'queries' parameter cannot be empty.")
+    
+    if studyType is not None:
+        if studyType not in {"EXPANDED_ACCESS", "INTERVENTIONAL", "OBSERVATIONAL"}:
+            raise ValueError(
+                "The 'studyType' parameter must be either None, "
+                "'EXPANDED_ACCESS', 'INTERVENTIONAL', or 'OBSERVATIONAL'"
+            )
 
     def __search_query__(
         query: dict[str, str | None],
@@ -181,13 +193,13 @@ def search_clinical_trials(
         hasResults: bool = False,
         studyType: str | None = None,
         excludeNctIds: list[str] | None = None,
-        output_path: Path | None = None
+        output_path: Path | None = None,
     ) -> dict[str, Any]:
-        
+
         fields = ",".join([
             "protocolSection",
             "resultsSection",
-            "hasResults",
+            "hasResults"
         ])
 
         params = {
@@ -201,14 +213,20 @@ def search_clinical_trials(
         condition = query.get("condition")
         intervention = query.get("intervention")
 
+        """
+        Say we are searching for 'breast cancer'. Since it is not in double quotes,
+        the API will search for trials with the word 'breast' and 'cancer', instead 
+        of focusing only on 'breast cancer'. 
+        See: https://clinicaltrials.gov/find-studies/how-to-search
+        """
         if term is not None:
-            params["query.term"] = term
+            params["query.term"] = f'"{term}"'
 
         if condition is not None:
-            params["query.cond"] = condition
+            params["query.cond"] = f'"{condition}"'
 
         if intervention is not None:
-            params["query.intr"] = intervention
+            params["query.intr"] = f'"{intervention}"'
 
         if patient_info is not None:
             params["query.patient"] = patient_info
@@ -230,8 +248,13 @@ def search_clinical_trials(
         url = "https://clinicaltrials.gov/api/v2/studies"
 
         while True:
+            time.sleep(0.1) # Help prevent getting API rate limit error
             response = session.get(url, params=params)
             response.raise_for_status()
+
+            if response.status_code == 429:
+                raise RuntimeError("Rate limit exceeded (429).")
+            
             data = response.json()
 
             if total_count == 0:
@@ -252,7 +275,7 @@ def search_clinical_trials(
         paths = []
 
         if output_path is not None:
-            paths = download_clinical_trials(studies, output_path)
+            paths = download_clinical_trials(studies, output_path, redownload=True)
 
         return {
             "query": query,
@@ -297,6 +320,33 @@ def search_clinical_trials(
 
     return results
 
+def count_num_trials(results: list[dict[str, Any]]) -> tuple[int, int]:
+    all_nct_ids = []
+
+    for result in results:
+        for study in result.get("studies", []):
+            nct_id = (
+                study.get("protocolSection", {})
+                .get("identificationModule", {})
+                .get("nctId")
+            )
+            if nct_id is not None:
+                all_nct_ids.append(nct_id)
+
+    total_num_trials = len(all_nct_ids)
+    unique_num_trials = len(set(all_nct_ids))
+
+    return unique_num_trials, total_num_trials
+
+def get_nct_id(study: dict[str, Any]) -> str | None:
+    if "nctId" in study:
+        return study["nctId"]
+    
+    return (
+        study.get("protocolSection", {})
+             .get("identificationModule", {})
+             .get("nctId")
+    )
 
 if __name__ == "__main__":
     import time
@@ -334,3 +384,11 @@ if __name__ == "__main__":
         total_studies = sum(len(res["studies"]) for res in results)
 
         print(f"{workers:<10} | {elapsed_time:<15.4f} | {total_studies}")
+
+    test_queries = [
+        {
+            "term": None, 
+            "condition": "hiatal hernia", 
+            "intervention": "magaldrate"
+        }
+    ]

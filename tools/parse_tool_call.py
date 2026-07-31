@@ -1,6 +1,7 @@
 from typing import Dict, Any
 import re
 import json
+import ast
 
 def parse_tool_call(text: str) -> Dict[str, Any]:
     params = {}
@@ -8,39 +9,45 @@ def parse_tool_call(text: str) -> Dict[str, Any]:
         r"<parameter=([^>]+)>\s*(.*?)\s*</parameter>",
         re.DOTALL,
     )
-
     for name, value in pattern.findall(text):
         value = value.strip()
-        if value in ["", "null", "None", "N/A"]:
-            value = None
-        elif value.isdigit():
-            value = int(value)
-        elif value.startswith("["):
-            value = json.loads(value)
 
-        params[name] = value
+        # 1. Strip markdown backticks if the LLM wrapped the parameter content in ```
+        value = re.sub(r"^```(?:json)?\s*", "", value, flags=re.IGNORECASE)
+        value = re.sub(r"\s*```$", "", value).strip()
+
+        # 2. Check for simple nulls/empty values
+        if value in ["", "null", "None", "N/A"]:
+            params[name] = None
+        elif value.isdigit():
+            params[name] = int(value)
+        elif value.startswith("[") or value.startswith("{"):
+            # Attempt strict JSON parsing first
+            try:
+                params[name] = json.loads(value)
+                continue
+            except json.JSONDecodeError:
+                pass
+
+            # Fallback 1: Parse Python-style syntax (handles None, True, False, single quotes)
+            try:
+                params[name] = ast.literal_eval(value)
+                continue
+            except (SyntaxError, ValueError):
+                pass
+
+            # Fallback 2: Replace Python keywords with JSON keywords and retry json.loads
+            try:
+                fixed_value = (
+                    value.replace("None", "null")
+                    .replace("True", "true")
+                    .replace("False", "false")
+                )
+                params[name] = json.loads(fixed_value)
+                continue
+            except json.JSONDecodeError:
+                params[name] = value
+        else:
+            params[name] = value
 
     return params
-
-if __name__ == "__main__":
-    test = """
-        </think>
-        <tool_call>
-        <function=search_clinical_trials>
-        <parameter=terms>
-        ["ravulizumab", "Ultomiris", "anti-C5", "complement inhibitor", "ravulizumab", "Ultomiris", "ravulizumab", "Ultomiris", "ravulizumab", "Ultomiris", "ravulizumab", "Ultomiris", "ravulizumab", "Ultomiris", null, null, null, null, "ravulizumab", "Ultomiris", "ravulizumab", "Ultomiris", "ravulizumab", "Ultomiris", "ravulizumab", "Ultomiris", "ravulizumab", "Ultomiris", null, null, null, null]
-        </parameter>
-        <parameter=conditions>
-        ["Paroxysmal Hemoglobinuria", "Paroxysmal Hemoglobinuria", "Paroxysmal Hemoglobinuria", "Paroxysmal Hemoglobinuria", "PNH", "PNH", "atypical hemolytic uremic syndrome", "aHUS", "Myasthenia Gravis", "Neuromyelitis Optica Spectrum Disorder", "Hemoglobinuria, Paroxysmal", "Hemoglobinuria, Paroxysmal", null, null, "Paroxysmal Hemoglobinuria", "PNH", "atypical hemolytic uremic syndrome", "aHUS", "Paroxysmal Hemoglobinuria", "Paroxysmal Hemoglobinuria", "PNH", "PNH", "atypical hemolytic uremic syndrome", "aHUS", "Myasthenia Gravis", "Neuromyelitis Optica Spectrum Disorder", "Hemoglobinuria, Paroxysmal", "Hemoglobinuria, Paroxysmal", "Paroxysmal Hemoglobinuria", "PNH", "atypical hemolytic uremic syndrome", "aHUS"]
-        </parameter>
-        <parameter=interventions>
-        ["ravulizumab", "Ultomiris", "ravulizumab", "ravulizumab", "ravulizumab", "Ultomiris", "ravulizumab", "Ultomiris", "ravulizumab", "Ultomiris", "ravulizumab", "Ultomiris", "ravulizumab", "Ultomiris", "ravulizumab", "Ultomiris", "ravulizumab", "ravulizumab", "ravulizumab", "ravulizumab", null, null, null, null, null, null, null, null, null, null, "Ultomiris", "Ultomiris", "Ultomiris", "Ultomiris"]
-        </parameter>
-        </function>
-        </tool_call>
-    """
-
-    result = parse_tool_call(test)
-    print(len(result['terms']))
-    print(len(result['conditions']))
-    print(len(result['interventions']))

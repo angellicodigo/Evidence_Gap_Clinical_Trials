@@ -14,7 +14,11 @@ retry_strategy = Retry(
 
 max_connections = 64
 session = requests.Session()
-adapter = HTTPAdapter(pool_connections=max_connections, pool_maxsize=max_connections)
+adapter = HTTPAdapter(
+    max_retries=retry_strategy, 
+    pool_connections=max_connections, 
+    pool_maxsize=max_connections
+)
 session.mount("https://", adapter)
 session.mount("http://", adapter)
 
