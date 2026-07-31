@@ -1,4 +1,4 @@
-# nemotronL40
+# Evidence_Gap_Clinical_Trials
 
 <a target="_blank" href="https://cookiecutter-data-science.drivendata.org/">
     <img src="https://img.shields.io/badge/CCDS-Project%20template-328F97?logo=cookiecutter" />
@@ -7,52 +7,25 @@
 ## Project Organization
 
 ```
-├── LICENSE            <- Open-source license if one is chosen
-├── Makefile           <- Makefile with convenience commands like `make data` or `make train`
-├── README.md          <- The top-level README for developers using this project.
-├── data
-│   ├── external       <- Data from third party sources.
-│   ├── interim        <- Intermediate data that has been transformed.
-│   ├── processed      <- The final, canonical data sets for modeling.
-│   └── raw            <- The original, immutable data dump.
-│
-├── docs               <- A default mkdocs project; see www.mkdocs.org for details
-│
-├── models             <- Trained and serialized models, model predictions, or model summaries
-│
-├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
-│                         the creator's initials, and a short `-` delimited description, e.g.
-│                         `1.0-jqp-initial-data-exploration`.
-│
-├── pyproject.toml     <- Project configuration file with package metadata for 
-│                         nemotronl40 and configuration for tools like black
-│
-├── references         <- Data dictionaries, manuals, and all other explanatory materials.
-│
-├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
-│   └── figures        <- Generated graphics and figures to be used in reporting
-│
-├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
-│                         generated with `pip freeze > requirements.txt`
-│
-├── setup.cfg          <- Configuration file for flake8
-│
-└── nemotronl40   <- Source code for use in this project.
-    │
-    ├── __init__.py             <- Makes nemotronl40 a Python module
-    │
-    ├── config.py               <- Store useful variables and configuration
-    │
-    ├── dataset.py              <- Scripts to download or generate data
-    │
-    ├── features.py             <- Code to create features for modeling
-    │
-    ├── modeling                
-    │   ├── __init__.py 
-    │   ├── predict.py          <- Code to run model inference with trained models          
-    │   └── train.py            <- Code to train models
-    │
-    └── plots.py                <- Code to create visualizations
+Evidence_Gap_Clinical_Trials/
+├── README.md
+├── .cache/                     <- Where the weights of the Nemotron lies
+├── data/
+│   ├── RxClass/
+│   ├── clinical_trials/
+│   └── responses/
+├── jobs/
+│   ├── start_ray_cluster.lsf/  <- Submit this job to start a Ray cluster
+│   └── add_ray_worker.lsf/     <- Submit this job as many times as you like to add Ray workers to the Ray cluster
+├── main.py                     <- Main pipeline script that processes patient notes, fetches trials, and evaluates relevance.
+└── tools/
+    ├── ClinicalTrialGov.py     <- Fetches, extracts, and downloads clinical trial data from the ClinicalTrials.gov API.
+    ├── Ray.py                  <- Handles Ray cluster initialization and actor pool creation for the Nemotron models.
+    ├── RxClass.py              <- Interfaces with the RxNav API to retrieve drug classes and their members.
+    ├── logger.py               <- Handles logging pipeline stages and dumping raw outputs to disk.
+    ├── parse_tool_call.py      <- Parses and validates the XML-style tool calls from the raw Nemotron outputs.
+    ├── prompts.py              <- Stores the prompt templates for RxClass selection, query generation, and evaluation.
+    └── tasks.py                <- Contains the core logic for batching Nemotron chats and executing pipeline tasks.
 ```
 
 --------
@@ -96,7 +69,7 @@ $ bpeek <Job ID of start_ray_cluster.lsf>
 
 # How to use Ray Dashboard?
 1. Get your Ray address, which is in the format of <IP:PORT>, e.g. 172.28.19.213:25052
-2. In a separate terminal,
+2. In a separate terminal or Git Bash,
 $ ssh -L 25053:<IP>:25053 <Mount Sinai ID>@minerva.hpc.mssm.edu
 3. Open http://localhost:25053/ on your web browser. 
 
