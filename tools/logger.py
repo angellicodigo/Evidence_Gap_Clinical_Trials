@@ -12,8 +12,9 @@ def log(patient_notes: list[dict[str, str]], message: str, contents: list[Any] |
         prefix += f" [{stage}]"
 
     if contents is not None and len(contents) != len(patient_notes):
-        raise ValueError(
-            "contents must have the same length as patient_notes."
+        raise ValueError(f"""
+            Length mismatch: len(contents) is {len(contents)}, but len(patient_notes) is {len(patient_notes)}.
+            """
         )
 
     for i, patient_note in enumerate(patient_notes):

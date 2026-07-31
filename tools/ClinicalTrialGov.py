@@ -10,7 +10,7 @@ from urllib3.util.retry import Retry
 retry_strategy = Retry(
     total=8,                          # up to 8 retries per request
     backoff_factor=1,                 # sleeps 1s, 2s, 4s, 8s, 16s...
-    status_forcelist=[500, 502, 503, 504],
+    status_forcelist=[429, 500, 502, 503, 504],
     allowed_methods=["GET"],
     respect_retry_after_header=True,  # honor the server's Retry-After header if it sends one
 )
@@ -248,7 +248,7 @@ def search_clinical_trials(
             response.raise_for_status()
 
             if response.status_code == 429:
-                raise RuntimeError("Rate limit exceeded (429).")
+                raise RuntimeError(f"Rate limit exceeded (429). Retry strategy exhausted for query: {query}")
             
             data = response.json()
 

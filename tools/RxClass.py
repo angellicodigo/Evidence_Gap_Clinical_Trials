@@ -224,8 +224,10 @@ def getClassesMembers(
 ) -> list[list[dict[str, Any]]]:
 
     if not (len(classIds) == len(classNames) == len(classTypes)):
-        raise ValueError(
-            "classIds, classNames, and classTypes must have the same length."
+        raise ValueError(f"""
+            Length mismatch: classIds ({len(classIds)}), classNames ({len(classNames)}),\n
+            and classTypes ({len(classTypes)}) must be equal.
+            """
         )
     
     if relaSources is None:

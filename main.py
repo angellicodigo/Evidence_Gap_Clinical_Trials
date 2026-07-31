@@ -118,7 +118,7 @@ def evaluate_trials(model: ActorPool, sampling_params: SamplingParams, patient_n
             rela = drug_member.get("classInfo", {}).get("rela")
             
             if not drug_name or not rxclass_name:
-                raise ValueError("""
+                raise ValueError(f"""
                         Missing drug_name and rxclass_name\n
                         Drug Member Object: {drug_member}   
                     """
@@ -167,7 +167,7 @@ def process_patient_notes(patient_notes: list[dict[str, str]], model: ActorPool,
 
 
 if __name__ == "__main__":
-    patient_notes = load_patient_notes(PATIENT_NOTES_PATH, limit=1)
+    patient_notes = load_patient_notes(PATIENT_NOTES_PATH)
     log(patient_notes, "Successfully loaded patient notes.", stage="LOAD")
     pool = get_actor_pool()
     sampling_params = SamplingParams(temperature=0.0, max_tokens=100000)

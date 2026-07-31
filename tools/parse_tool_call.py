@@ -9,14 +9,24 @@ def parse_tool_call(text: str) -> Dict[str, Any]:
         r"<parameter=([^>]+)>\s*(.*?)\s*</parameter>",
         re.DOTALL,
     )
-    for name, value in pattern.findall(text):
+    
+    matches = pattern.findall(text)
+    
+    if not matches:
+        raise ValueError(f"""
+            Failed to parse tool call. Expected XML tags '<parameter=...>'.\n
+            Raw output:\n\n{text}
+            """
+        )
+
+    for name, value in matches:
         value = value.strip()
 
-        # 1. Strip markdown backticks if the LLM wrapped the parameter content in ```
+        # Strip markdown backticks if the LLM wrapped the parameter content in ```
         value = re.sub(r"^```(?:json)?\s*", "", value, flags=re.IGNORECASE)
         value = re.sub(r"\s*```$", "", value).strip()
 
-        # 2. Check for simple nulls/empty values
+        # Check for simple nulls/empty values
         if value in ["", "null", "None", "N/A"]:
             params[name] = None
         elif value.isdigit():

@@ -83,16 +83,22 @@ def select_rxclass_task(model: ActorPool, sampling_params: SamplingParams, patie
 
     selected_classes = []
 
-    for response in raw_outputs:
+    for i, response in enumerate(raw_outputs):
         tool_params = parse_tool_call(response)
-        class_name = tool_params["class"]
+        class_name = tool_params.get("class")
 
         # Use the O(1) dictionary lookup instead of nested loops
         match = RXCLASS_MAPPING.get(class_name)
 
         if not match:
-            raise FileNotFoundError(
-                f"RxClass '{class_name}' does not exist in any RxClass .txt file."
+            # Capture the associated patient ID to know exactly who caused it
+            patient_id = patient_notes[i].get("source", {}).get("note_id", "Unknown")
+            
+            raise FileNotFoundError(f"""
+                RxClass '{class_name}' does not exist in any RxClass .txt file\n.
+                Patient ID '{patient_id}' caused an error.\n
+                Nemotron Raw Output/Reasoning:\n{response}
+                """ 
             )
 
         selected_classes.append(match)
