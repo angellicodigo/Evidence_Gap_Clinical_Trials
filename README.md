@@ -30,6 +30,12 @@ Evidence_Gap_Clinical_Trials/
 
 --------
 
+# How to create the conda environment
+1. cd to the project directory
+$ cd Evidence_Gap_Clinical_Trials
+2. Run the command below
+$ conda env create -f environment.yml
+
 # How to Download the Weights
 1. Run this command
 $ bsub -Is -P acc_EHR_ML -q premium -n 4 -R "rusage[mem=8000]" -W 10:00 bash

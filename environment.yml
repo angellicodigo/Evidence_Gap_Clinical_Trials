@@ -1,0 +1,16 @@
+name: nemotron-env
+
+channels:
+  - conda-forge
+  - defaults
+
+dependencies:
+  - python=3.13
+  - pip
+  - pandas
+  - requests
+  - urllib3
+
+  - pip:
+      - ray
+      - vllm
