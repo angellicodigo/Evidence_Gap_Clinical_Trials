@@ -5,7 +5,7 @@ channels:
   - defaults
 
 dependencies:
-  - python=3.13
+  - python=3.13.12
   - pip
   - pandas
   - requests
@@ -14,3 +14,5 @@ dependencies:
   - pip:
       - ray
       - vllm
+      - flashinfer-python==0.6.13
+      - flashinfer-cubin==0.6.13

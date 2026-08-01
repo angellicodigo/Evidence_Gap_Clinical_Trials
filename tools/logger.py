@@ -27,16 +27,16 @@ def log(patient_notes: list[dict[str, str]], message: str, contents: list[Any] |
             if contents is not None:
                 f.write(f"{prefix} {contents[i]}\n")
 
-def dump(patient_notes: list[dict[str, str]], raw_outputs: list[str]) -> None:
-    if len(raw_outputs) != len(patient_notes):
+def dump(patient_notes: list[dict[str, str]], outputs: list[str], filename: str = "raw_outputs.txt") -> None:
+    if len(outputs) != len(patient_notes):
         raise ValueError(
             "outputs must have the same length as patient_notes."
         )
 
-    for patient_note, output in zip(patient_notes, raw_outputs):
+    for patient_note, output in zip(patient_notes, outputs):
         patient_id = str(patient_note.get("source").get("note_id"))
-        raw_path = RESPONSES_STORE_PATH / patient_id / "raw_outputs.txt"
+        file_path = RESPONSES_STORE_PATH / patient_id / filename
 
-        with raw_path.open("a", encoding="utf-8") as f:
+        with file_path.open("a", encoding="utf-8") as f:
             f.write(output)
             f.write("\n")

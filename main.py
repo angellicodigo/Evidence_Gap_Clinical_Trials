@@ -27,12 +27,15 @@ def load_patient_notes(notes_dir: Path, limit: int | None = None) -> list[dict[s
 
         log_path = output_dir / "pipeline.log"
         raw_path = output_dir / "raw_outputs.txt"
+        prompts_path = output_dir / "prompts.txt"
 
         log_path.unlink(missing_ok=True)
         raw_path.unlink(missing_ok=True)
+        prompts_path.unlink(missing_ok=True)
 
         log_path.touch()
         raw_path.touch()
+        prompts_path.touch()
 
         patient_notes.append(patient_note)
 
@@ -41,11 +44,14 @@ def load_patient_notes(notes_dir: Path, limit: int | None = None) -> list[dict[s
 
 def select_rxclasses(model: ActorPool, sampling_params: SamplingParams, patient_notes: list[dict[str, str]]) -> list[dict[str, Any]]:
     log(patient_notes, "Starting inital Nemotron task.", stage="RXCLASS")
-    selected_classes, raw_outputs, elapsed = select_rxclass_task(model, sampling_params, patient_notes)
+    selected_classes, raw_outputs, prompt_outputs, prompt_lengths, elapsed = select_rxclass_task(model, sampling_params, patient_notes)
     log(patient_notes, "Successfully asked Nemotron to read the extraction and choose a RxClass.", contents=selected_classes, stage="RXCLASS")
+    log(patient_notes, "Generated prompt token lengths for RxClass selection.", contents=prompt_lengths, stage="RXCLASS")
     log(patient_notes, f"This task took an average time of {(elapsed / len(patient_notes)):.2f} seconds.", stage="RXCLASS")
+    dump(patient_notes, prompt_outputs, filename="prompts.txt")
+    log(patient_notes, "Updated prompts.txt.", stage="RXCLASS")
     dump(patient_notes, raw_outputs)
-    log(patient_notes, f"Updated raw_output.txt.", stage="RXCLASS")
+    log(patient_notes, "Updated raw_output.txt.", stage="RXCLASS")
     return selected_classes
 
 
@@ -66,6 +72,7 @@ def fetch_drug_members(patient_notes: list[dict[str, str]], selected_classes: li
         ignoreNoneRela=True
     )
     elapsed = time.perf_counter() - start_time
+    
     total_drug_members = sum(len(sublist) for sublist in drug_members)
     log(patient_notes, f"Successfully retrieved {total_drug_members} drug members.", contents=drug_members, stage="DRUGS")
     log(patient_notes, f"This task took an average time of {(elapsed / len(patient_notes)):.2f} seconds.", stage="DRUGS")
@@ -75,7 +82,7 @@ def fetch_drug_members(patient_notes: list[dict[str, str]], selected_classes: li
 def query_trials(model: ActorPool, sampling_params: SamplingParams, patient_notes: list[dict[str, str]], drug_members: list[list[dict[str, Any]]]):
     log(patient_notes, "Starting ClinicalTrials.gov query generation task.", stage="TRIALS")
     
-    trials, num_duplicate_trials, query_raw_outputs, query_elapsed = query_trials_task(
+    trials, query_raw_outputs, query_prompts, num_duplicate_trials, query_elapsed = query_trials_task(
         model, 
         sampling_params, 
         patient_notes, 
@@ -83,7 +90,6 @@ def query_trials(model: ActorPool, sampling_params: SamplingParams, patient_note
         TRIAL_STORE_PATH
     )
 
-    # This code is for log(). It doesn't change the format of trials
     trial_counts_summary = []
     for duplicates in num_duplicate_trials:
         raw_total = sum(total for _, total in duplicates)
@@ -94,6 +100,8 @@ def query_trials(model: ActorPool, sampling_params: SamplingParams, patient_note
     log(patient_notes, "Successfully queried clinical trials.", contents=trial_counts_summary, stage="TRIALS")
     log(patient_notes, "For each drug from RxClass, recorded the aggregated unique and total trial counts for each evaluated drug (unique_num_trials, total_num_trials):", contents=num_duplicate_trials, stage="TRIALS")
     log(patient_notes, f"The time it took to query ClinicalTrials.gov took an average time of {(query_elapsed / len(patient_notes)):.2f} seconds.", stage="TRIALS")
+    dump(patient_notes, query_prompts, filename="prompts.txt")
+    log(patient_notes, "Updated prompts.txt.", stage="TRIALS")
     dump(patient_notes, query_raw_outputs)
     log(patient_notes, "Updated raw_output.txt.", stage="TRIALS")
     
@@ -103,10 +111,8 @@ def query_trials(model: ActorPool, sampling_params: SamplingParams, patient_note
 def evaluate_trials(model: ActorPool, sampling_params: SamplingParams, patient_notes: list[dict[str, str]], all_trials, drug_members):
     log(patient_notes, "Starting clinical trial relevance evaluation task.", stage="EVALUATE")
 
-    # Initializes an outer list to hold the clean, deduplicated, and metadata-enriched trials for every patient
     formatted_trials = []
 
-    # The code below formats the drug information for the final json output
     for i, patient_drug_queries in enumerate(all_trials):
         patient_studies = []
         seen_ncts = set()
@@ -142,7 +148,7 @@ def evaluate_trials(model: ActorPool, sampling_params: SamplingParams, patient_n
                         
         formatted_trials.append(patient_studies)
 
-    eval_results, eval_raw_outputs, eval_elapsed = generate_trials_task(
+    eval_results, eval_raw_outputs, eval_prompts, eval_elapsed = generate_trials_task(
         model=model,
         sampling_params=sampling_params,
         patient_notes=patient_notes,
@@ -153,6 +159,8 @@ def evaluate_trials(model: ActorPool, sampling_params: SamplingParams, patient_n
     
     log(patient_notes, "Successfully evaluated clinical trials relevance.", stage="EVALUATE")
     log(patient_notes, f"This task took an average time of {(eval_elapsed / len(patient_notes)):.2f} seconds.", stage="EVALUATE")
+    dump(patient_notes, eval_prompts, filename="prompts.txt")
+    log(patient_notes, "Updated prompts.txt.", stage="EVALUATE")
     dump(patient_notes, eval_raw_outputs)
     log(patient_notes, "Updated raw_output.txt.", stage="EVALUATE")
     
@@ -170,5 +178,5 @@ if __name__ == "__main__":
     patient_notes = load_patient_notes(PATIENT_NOTES_PATH)
     log(patient_notes, "Successfully loaded patient notes.", stage="LOAD")
     pool = get_actor_pool()
-    sampling_params = SamplingParams(temperature=0.0, max_tokens=100000)
+    sampling_params = SamplingParams(temperature=1.0, top_p=0.95, repetition_penalty=1.15, max_tokens=64000, seed=12345)
     process_patient_notes(patient_notes, pool, sampling_params)

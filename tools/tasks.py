@@ -18,7 +18,6 @@ for txt_file in RXCLASS_DRUGS_PATH.glob("*.txt"):
                 continue
             name, class_id = line.split("\t", 1)
             
-            # Check for cross-file duplicates to replicate your previous RuntimeError check
             if name in RXCLASS_MAPPING:
                 raise RuntimeError(
                     f"RxClass '{name}' exists in multiple class type files: "
@@ -39,9 +38,7 @@ def batch_chat(model: ActorPool, sampling_params: SamplingParams, prompts: list[
         batches
     ))
 
-    # Flatten nested outputs into a single list of response texts
     responses = []
-
     for worker_out in worker_outputs:
         for req_out in worker_out.get("result", []):
             responses.append(req_out.outputs[0].text)
@@ -67,43 +64,32 @@ SELECT_RXCLASS_TOOL = {
     },
 }
 
-def select_rxclass_task(model: ActorPool, sampling_params: SamplingParams, patient_notes: list[dict[str, str]]) -> tuple[list[dict[str, Any]], list[str], float]:
-    prompts = []
-    for patient_note in patient_notes:
-        prompts.append(select_rxclass_prompt(patient_note))
+def select_rxclass_task(model: ActorPool, sampling_params: SamplingParams, patient_notes: list[dict[str, str]]) -> tuple[list[dict[str, Any]], list[str], list[str], float]:
+    prompts = [select_rxclass_prompt(patient_note) for patient_note in patient_notes]
+    grouped_prompts = [json.dumps(p, indent=2) for p in prompts]
 
     start_time = time.perf_counter()
-    raw_outputs = batch_chat(
-        model,
-        sampling_params,
-        prompts,
-        [SELECT_RXCLASS_TOOL]
-    )
+    raw_outputs = batch_chat(model, sampling_params, prompts, [SELECT_RXCLASS_TOOL])
     elapsed = time.perf_counter() - start_time
 
     selected_classes = []
-
-    for i, response in enumerate(raw_outputs):
+    for response in raw_outputs:
         tool_params = parse_tool_call(response)
-        class_name = tool_params.get("class")
+        class_name = tool_params["class"]
+        if class_name is None:
+            raise ValueError(
+                f"Model never emitted the select_rxclass tool call. Raw output:\n{response}"
+            )
 
-        # Use the O(1) dictionary lookup instead of nested loops
         match = RXCLASS_MAPPING.get(class_name)
-
         if not match:
-            # Capture the associated patient ID to know exactly who caused it
-            patient_id = patient_notes[i].get("source", {}).get("note_id", "Unknown")
-            
-            raise FileNotFoundError(f"""
-                RxClass '{class_name}' does not exist in any RxClass .txt file\n.
-                Patient ID '{patient_id}' caused an error.\n
-                Nemotron Raw Output/Reasoning:\n{response}
-                """ 
+            raise FileNotFoundError(
+                f"RxClass '{class_name}' does not exist in any RxClass .txt file."
             )
 
         selected_classes.append(match)
 
-    return selected_classes, raw_outputs, elapsed
+    return selected_classes, raw_outputs, grouped_prompts, elapsed
 
 SEARCH_CLINICAL_TRIALS_TOOL = {
     "type": "function",
@@ -186,36 +172,29 @@ SEARCH_CLINICAL_TRIALS_TOOL = {
     },
 }
 
-def query_trials_task(model: ActorPool, sampling_params: SamplingParams, patient_notes: list[dict[str, str]], drug_members: list[list[dict[str, Any]]], output_path: Path) -> tuple[list[list[list[dict[str, Any]]]], list[list[tuple[int, int]]], list[str], float]:
+def query_trials_task(model: ActorPool, sampling_params: SamplingParams, patient_notes: list[dict[str, str]], drug_members: list[list[dict[str, Any]]], output_path: Path) -> tuple[list[list[list[dict[str, Any]]]], list[str], list[str], list[tuple[int, int]], float]:
     prompts = []
-    # Keeps track of how many drugs per RxClass 
-    drug_counts = []
+    counts = []
     
-    # Map every drug to a prompt, tracking counts per patient
-    for i in range(len(patient_notes)):
+    for i, patient_note in enumerate(patient_notes):
         patient_drugs = drug_members[i]
-        drug_counts.append(len(patient_drugs))
+        counts.append(len(patient_drugs))
         for drug in patient_drugs:
-            prompts.append(query_trials_prompt(patient_notes[i], drug))
+            prompts.append(query_trials_prompt(patient_note, drug))
 
-    raw_outputs = batch_chat(
-        model,
-        sampling_params,
-        prompts,
-        [SEARCH_CLINICAL_TRIALS_TOOL]
-    )
+    raw_outputs = batch_chat(model, sampling_params, prompts, [SEARCH_CLINICAL_TRIALS_TOOL])
     
     all_trials = []
     num_duplicate_trials = []
     grouped_raw_outputs = []
+    grouped_prompts = []
     output_idx = 0
-
-    # Re-group outputs and query results by patient
+    separator = f"\n\n{'=' * 200}\n\n"
     start_time = time.perf_counter()
 
-    for count in drug_counts:
-        # List slicing to grab the chunk of responses belonging to the patient
+    for count in counts:
         patient_raw_outputs = raw_outputs[output_idx : output_idx + count]
+        patient_prompts = prompts[output_idx : output_idx + count]
         patient_all_trials = []
         patient_duplicates = []
         
@@ -226,7 +205,7 @@ def query_trials_task(model: ActorPool, sampling_params: SamplingParams, patient
             if not queries:
                 raise ValueError(
                     f"The LLM did not use the tool call correctly. Here is the output:\n{response}"
-                    )
+                )
 
             trials = search_clinical_trials(
                 queries, 
@@ -236,21 +215,19 @@ def query_trials_task(model: ActorPool, sampling_params: SamplingParams, patient
             )
 
             unique_num_trials, total_num_trials = count_num_trials(trials)
-            
             patient_duplicates.append((unique_num_trials, total_num_trials))
             patient_all_trials.append(trials)
 
-        # This part of the code is formatting the output for dump()
-        separator = f"\n\n{'=' * 200}\n\n"
         grouped_raw_outputs.append(separator.join(patient_raw_outputs))
+        grouped_prompts.append(separator.join([json.dumps(p, indent=2) for p in patient_prompts]))
+
         all_trials.append(patient_all_trials)
         num_duplicate_trials.append(patient_duplicates)
-        
         output_idx += count
 
     elapsed = time.perf_counter() - start_time
     
-    return all_trials, num_duplicate_trials, grouped_raw_outputs, elapsed
+    return all_trials, grouped_raw_outputs, grouped_prompts, num_duplicate_trials, elapsed
 
 EVALUATE_RELEVANCE_TOOL = {
     "type": "function",
@@ -277,7 +254,7 @@ EVALUATE_RELEVANCE_TOOL = {
     },
 }
 
-def generate_trials_task(model: ActorPool, sampling_params: SamplingParams, patient_notes: list[dict[str, str]], trials: list[list[dict[str, Any]]], output_path: Path, rewrite: bool = False) -> tuple[dict[str, dict[str, Any]], list[str], float]:
+def generate_trials_task(model: ActorPool, sampling_params: SamplingParams, patient_notes: list[dict[str, str]], trials: list[list[dict[str, Any]]], output_path: Path, rewrite: bool = False) -> tuple[dict[str, dict[str, Any]], list[str], list[str], float]:
     
     def __process__(patient_note: dict[str, str], trial: dict[str, Any]) -> tuple[str, dict[str, Any], str]:
         note_id = patient_note.get("source", {}).get("note_id")
@@ -326,8 +303,6 @@ def generate_trials_task(model: ActorPool, sampling_params: SamplingParams, pati
         relevance_score = tool_params.get("relevanceScore")
         reasoning = tool_params.get("reasoning")
         
-        # Checks if the current patient note has already been evaluated
-        # in this trial json before
         if note_id in target_data["notes"]:
             idx = target_data["notes"].index(note_id)
             if rewrite:
@@ -341,43 +316,36 @@ def generate_trials_task(model: ActorPool, sampling_params: SamplingParams, pati
             target_data["reasoning"].append(reasoning)
 
     prompts = []
-    # Stores a tracking dictionary for each trial-patient pair (NCT ID, note ID, path, and providence)
     metadata = []
-    trial_counts = []
+    counts = []
     
-    # Prepare prompts and track metadata using helper
     for i, patient_note in enumerate(patient_notes):
         patient_trials = trials[i]
-        trial_counts.append(len(patient_trials))
+        counts.append(len(patient_trials))
         
         for trial in patient_trials:
-            # The helper function validates the trial, extracts its metadata, and generates its evaluation prompt
             _, meta_dict, prompt = __process__(patient_note, trial)
             metadata.append(meta_dict)
             prompts.append(prompt)
     
     start_time = time.perf_counter()
-
-    raw_outputs = batch_chat(
-        model, 
-        sampling_params, 
-        prompts, 
-        [EVALUATE_RELEVANCE_TOOL]
-    )
-
+    raw_outputs = batch_chat(model, sampling_params, prompts, [EVALUATE_RELEVANCE_TOOL])
     elapsed = time.perf_counter() - start_time
     
-    # Group raw outputs per patient note
-    # Prepares a list to store concatenated raw text outputs mapped 1-to-1 with each patient note
     grouped_raw_outputs = []
+    grouped_prompts = []
     output_idx = 0
-    for count in trial_counts:
+    separator = f"\n\n{'=' * 200}\n\n"
+
+    for count in counts:
         patient_raw_outputs = raw_outputs[output_idx : output_idx + count]
-        separator = f"\n\n{'=' * 200}\n\n"
+        patient_prompts = prompts[output_idx : output_idx + count]
+
         grouped_raw_outputs.append(separator.join(patient_raw_outputs))
+        grouped_prompts.append(separator.join([json.dumps(p, indent=2) for p in patient_prompts]))
+
         output_idx += count
     
-    # Aggregate results and load/save trial data files
     aggregated_results = {}
     
     for meta, response in zip(metadata, raw_outputs):
@@ -402,10 +370,9 @@ def generate_trials_task(model: ActorPool, sampling_params: SamplingParams, pati
                 
         __evaluate__(aggregated_results[nct_id], meta, response)
         
-    # Write all updated records back to disk
     for nct_id, data in aggregated_results.items():
         file_path = output_path / f"{nct_id}.json"
         with file_path.open("w", encoding="utf-8") as f:
             json.dump(data, f, indent=2)
             
-    return aggregated_results, grouped_raw_outputs, elapsed
+    return aggregated_results, grouped_raw_outputs, grouped_prompts, elapsed

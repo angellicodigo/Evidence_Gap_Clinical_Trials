@@ -31,7 +31,7 @@ def select_rxclass_prompt(patient_note: dict[str, str]) -> list[dict[str, str]]:
                 {description}
 
                 Available Classes:
-                {chr(10).join(f"- {name}" for name in subclasses)}
+                {"\n".join(f"- {name}" for name in subclasses)}
         """
         )
 
@@ -60,6 +60,8 @@ def select_rxclass_prompt(patient_note: dict[str, str]) -> list[dict[str, str]]:
                 evaluate how relevant the trials are to the patient notes. You must call the tool `select_rxclass` 
                 exactly once by inputting exactly how the class is written. 
                 For example, if there is a class called 'Abdomen, Acute' then output exactly as written, 'Abdomen, Acute'. 
+                Do not invent or infer class names outside the provided list. Double check that your choice of the class name 
+                appears verbatim in one of the Available Classes (for example, Lyme disease is not in the list). 
                 
                 {sections_str}
         """
@@ -162,3 +164,14 @@ def generate_trials_prompt(patient_note: dict[str, str], trial: dict[str, Any]) 
         }
     ]
     return messages
+
+if __name__ == "__main__":
+    dummy_patient_note = {
+        "source": {"note_id": "166098869"},
+        "text": "The patient mentions cannabis abuse, cyclic vomiting syndrome, gastroparesis, opioid dependence, dysautonomia, rheumatoid arthritis, diarrhea, cough, and chest tightness."
+    }
+
+    
+    messages = select_rxclass_prompt(dummy_patient_note)
+    print(messages)
+        

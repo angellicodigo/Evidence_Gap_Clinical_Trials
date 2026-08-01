@@ -34,7 +34,7 @@ Evidence_Gap_Clinical_Trials/
 1. cd to the project directory
 $ cd Evidence_Gap_Clinical_Trials
 2. Run the command below
-$ conda env create -f environment.yml
+$ conda env create -f environment.yml -y
 
 # How to Download the Weights
 1. Run this command
