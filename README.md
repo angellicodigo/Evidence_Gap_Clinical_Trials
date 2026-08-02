@@ -23,7 +23,6 @@ Evidence_Gap_Clinical_Trials/
     ├── Ray.py                  <- Handles Ray cluster initialization and actor pool creation for the Nemotron models.
     ├── RxClass.py              <- Interfaces with the RxNav API to retrieve drug classes and their members.
     ├── logger.py               <- Handles logging pipeline stages and dumping raw outputs to disk.
-    ├── parse_tool_call.py      <- Parses and validates the XML-style tool calls from the raw Nemotron outputs.
     ├── prompts.py              <- Stores the prompt templates for RxClass selection, query generation, and evaluation.
     └── tasks.py                <- Contains the core logic for batching Nemotron chats and executing pipeline tasks.
 ```
