@@ -6,13 +6,17 @@ from tools.ClinicalTrialGov import search_clinical_trials, count_num_trials
 from pathlib import Path
 import json
 from vllm import SamplingParams
+# Note: I found using StructuredOutputsParams help avoid hallucinations 
+# at the cost of limiting Nemotron's ability to output its reasoning
 from vllm.sampling_params import StructuredOutputsParams
 
+# Documentation recommends temperature=1.0 and top_p=0.95 for most tasks
+# https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-FP8
 MAX_TOKENS = 6400
 SEED = 12345
-RXCLASS_MAPPING = {}
 TEMPERATURE = 1
 TOP_P = 0.95
+RXCLASS_MAPPING = {}
 
 for txt_file in RXCLASS_DRUGS_PATH.glob("*.txt"):
     class_type = txt_file.stem
@@ -57,6 +61,7 @@ def batch_chat(model: ActorPool, sampling_params: SamplingParams, prompts: list[
 
     return responses
 
+# Making Nemotron select an index instead of the class name helps prevent hallucinations
 SELECT_RXCLASS_SCHEMA = {
     "type": "object",
     "properties": {
@@ -92,12 +97,20 @@ def select_rxclass_task(model: ActorPool, patient_notes: list[dict[str, str]]) -
 
     selected_classes = []
     for prompt, response in zip(prompts, raw_outputs):
-        result = json.loads(response)
+        try:
+            result = json.loads(response)
+        except json.JSONDecodeError as e:
+            raise ValueError(
+                f"Failed to parse JSON. The model likely hit a repetition loop and was truncated.\n"
+                f"JSON Error: {e}\n\n"
+                f"Prompt:\n{prompt}\n\n"
+                f"Raw Model Output:\n{response}"
+            ) from e
         index = result.get("index")
         
         if index is None:
             raise ValueError(f"""
-                Model didn't output the tool call correctly.\n
+                Index is missing\n
                 Here is the prompt:\n\n
                 {prompt}\n\n
                 Here is the output:\n\n
@@ -215,7 +228,7 @@ QUERY_TRIALS_SCHEMA = {
     "additionalProperties": False,
 }
 
-def query_trials_task(model: ActorPool, patient_notes: list[dict[str, str]], drug_members: list[list[dict[str, Any]]], output_path: Path) -> tuple[list[list[list[dict[str, Any]]]], list[str], list[str], list[tuple[int, int]], float]:
+def query_trials_task(model: ActorPool, patient_notes: list[dict[str, str]], drug_members: list[list[dict[str, Any]]], output_path: Path, num_queries: int = 5) -> tuple[list[list[list[dict[str, Any]]]], list[str], list[str], list[tuple[int, int]], float]:
     prompts = []
     counts = []
     
@@ -223,7 +236,7 @@ def query_trials_task(model: ActorPool, patient_notes: list[dict[str, str]], dru
         patient_drugs = drug_members[i]
         counts.append(len(patient_drugs))
         for drug in patient_drugs:
-            prompts.append(query_trials_prompt(patient_note, drug))
+            prompts.append(query_trials_prompt(patient_note, drug, num_queries=num_queries))
 
     structured_outputs_params = StructuredOutputsParams(json=QUERY_TRIALS_SCHEMA)
     sampling_params = SamplingParams(temperature=TEMPERATURE, top_p=TOP_P, max_tokens=MAX_TOKENS, seed=SEED, structured_outputs=structured_outputs_params)
@@ -244,12 +257,21 @@ def query_trials_task(model: ActorPool, patient_notes: list[dict[str, str]], dru
         patient_duplicates = []
         
         for response, prompt in zip(patient_raw_outputs, patient_prompts):
-            result = json.loads(response)
+            try:
+                result = json.loads(response)
+            except json.JSONDecodeError as e:
+                raise ValueError(
+                    f"Failed to parse JSON. The model likely hit a repetition loop and was truncated.\n"
+                    f"JSON Error: {e}\n\n"
+                    f"Prompt:\n{prompt}\n\n"
+                    f"Raw Model Output:\n{response}"
+                ) from e
+
             queries = result.get("queries")
 
             if queries is None:
                 raise ValueError(f"""
-                    Model didn't output the tool call correctly.\n
+                    Queries is missing\n
                     Here is the prompt:\n\n
                     {prompt}\n\n
                     Here is the output:\n\n
@@ -349,13 +371,24 @@ def generate_trials_task(model: ActorPool, patient_notes: list[dict[str, str]], 
 
     def __evaluate__(target_data: dict[str, Any], meta: dict[str, Any], response: str, prompt: list[dict[str, str]]) -> None:
         note_id = meta["note_id"]
-        result = json.loads(response)
+        try:
+            result = json.loads(response)
+        except json.JSONDecodeError as e:
+            raise ValueError(
+                f"Failed to parse JSON. The model likely hit a repetition loop and was truncated.\n"
+                f"JSON Error: {e}\n\n"
+                f"Prompt:\n{prompt}\n\n"
+                f"Raw Model Output:\n{response}"
+            ) from e
+        
         relevance_score = result.get("relevanceScore")
         reasoning = result.get("reasoning")
 
         if relevance_score is None or reasoning is None:
             raise ValueError(f"""
-                Model didn't output the tool call correctly.\n
+                relevance_score or reasoning is missing.\n
+                Relevance_score: {relevance_score}\n
+                Reasoning: {reasoning}\n
                 Here is the prompt:\n\n
                 {prompt}\n\n
                 Here is the output:\n\n

@@ -33,14 +33,10 @@ def select_rxclass_prompt(patient_note: dict[str, str]) -> list[dict[str, str]]:
         )
 
     sections_str = "\n\n".join(sections)
+
     example = {
-        "reasoning": (
-            "The patient's presentation is most consistent with the therapeutic "
-            "indication represented by the selected RxClass. This choice best "
-            "aligns with the primary documented clinical need while providing the "
-            "closest available match from the reference list."
-        ),
-        "index": 12,
+        "reasoning": "The patient presents with writing difficulty and left upper extremity coordination deficits, with occupational therapy focusing on improving hand dexterity and shoulder function. The primary need appears related to motor retraining and rehabilitation of fine motor skills. Among the RxClass disease list, Cerebral Palsy (class index 102) is a condition often requiring similar therapeutic interventions for motor coordination and upper extremity rehabilitation, making it the closest match for the patient's clinical needs.",
+        "index": 102
     }
 
     messages = [
@@ -75,8 +71,8 @@ def select_rxclass_prompt(patient_note: dict[str, str]) -> list[dict[str, str]]:
                 - Return a JSON object that conforms **exactly** to the provided schema. 
 
                 - `reasoning`
-                    - Provide a concise clinical justification in **2-3 sentences**.
-                    - Explain why the selected RxClass best matches the patient's primary clinical needs.
+                    - Explicitly name the chosen RxClass and its index
+                    - Provide a concise clinical justification in 2-3 sentences explaining why the selected RxClass best matches the patient's primary clinical needs.
                     - Do **not** mention your internal ranking, candidate list, or reasoning process.
                     - Do **not** quote or enumerate the RxClass reference list.
                     - Do **not** include XML, HTML, Markdown, code fences, or special tags.
@@ -88,7 +84,7 @@ def select_rxclass_prompt(patient_note: dict[str, str]) -> list[dict[str, str]]:
                 - Do not return any fields other than `reasoning` and `index`.
 
                 # Example
-                {json.dumps(example, indent=2)}
+                {json.dumps(example)}
 
                 Full RxClass Information:
 

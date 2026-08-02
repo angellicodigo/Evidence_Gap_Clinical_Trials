@@ -40,7 +40,6 @@ def load_patient_notes(notes_dir: Path, limit: int | None = None) -> list[dict[s
 
     return patient_notes
 
-
 def select_rxclasses(model: ActorPool, patient_notes: list[dict[str, str]]) -> list[dict[str, Any]]:
     log(patient_notes, "Starting inital Nemotron task.", stage="RXCLASS")
     selected_classes, raw_outputs, prompt_outputs, elapsed = select_rxclass_task(model, patient_notes)
@@ -51,7 +50,6 @@ def select_rxclasses(model: ActorPool, patient_notes: list[dict[str, str]]) -> l
     dump(patient_notes, raw_outputs)
     log(patient_notes, "Updated raw_output.txt.", stage="RXCLASS")
     return selected_classes
-
 
 def fetch_drug_members(patient_notes: list[dict[str, str]], selected_classes: list[dict[str, Any]]) -> list[list[dict[str, Any]]]:
     log(patient_notes, f"Fetching drug members from RxClass API.", stage="DRUGS")
@@ -89,7 +87,8 @@ def query_trials(model: ActorPool, patient_notes: list[dict[str, str]], drug_mem
         model, 
         patient_notes, 
         drug_members, 
-        TRIAL_STORE_PATH
+        TRIAL_STORE_PATH,
+        num_queries=3
     )
 
     trial_counts_summary = []
@@ -167,7 +166,6 @@ def evaluate_trials(model: ActorPool, patient_notes: list[dict[str, str]], all_t
     
     return eval_results
 
-
 def process_patient_notes(patient_notes: list[dict[str, str]], model: ActorPool) -> None:
     selected_classes = select_rxclasses(model, patient_notes)
     drug_members = fetch_drug_members(patient_notes, selected_classes)
@@ -178,6 +176,4 @@ if __name__ == "__main__":
     patient_notes = load_patient_notes(PATIENT_NOTES_PATH)
     log(patient_notes, "Successfully loaded patient notes.", stage="LOAD")
     pool = get_actor_pool()
-    # Documentation recommends temperature=1.0 and top_p=0.95 for most tasks
-    # https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-FP8
     process_patient_notes(patient_notes, pool)
