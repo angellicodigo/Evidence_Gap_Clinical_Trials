@@ -1,14 +1,19 @@
 import time
 from typing import Any
 from ray.util import ActorPool
-from vllm import SamplingParams
-from tools.parse_tool_call import parse_tool_call
 from tools.prompts import select_rxclass_prompt, RXCLASS_DRUGS_PATH, query_trials_prompt, generate_trials_prompt
 from tools.ClinicalTrialGov import search_clinical_trials, count_num_trials
 from pathlib import Path
 import json
+from vllm import SamplingParams
+from vllm.sampling_params import StructuredOutputsParams
 
+MAX_TOKENS = 6400
+SEED = 12345
 RXCLASS_MAPPING = {}
+TEMPERATURE = 1
+TOP_P = 0.95
+
 for txt_file in RXCLASS_DRUGS_PATH.glob("*.txt"):
     class_type = txt_file.stem
     with txt_file.open("r", encoding="utf-8") as f:
@@ -30,7 +35,14 @@ for txt_file in RXCLASS_DRUGS_PATH.glob("*.txt"):
                 "classId": class_id,
             }
 
-def batch_chat(model: ActorPool, sampling_params: SamplingParams, prompts: list[list[dict[str, str]]], tools: list[dict[str, Any]] | None = None, batch_size: int = 64) -> list[str]:
+RXCLASS_NAMES = list(RXCLASS_MAPPING.keys())
+
+RXCLASS_INDEX_TO_NAME = {
+    i: name
+    for i, name in enumerate(RXCLASS_NAMES)
+}
+
+def batch_chat(model: ActorPool, sampling_params: SamplingParams, prompts: list[list[dict[str, str]]], tools: list[dict[str, Any]] | None = None, batch_size: int = 16) -> list[str]:
     batches = [prompts[i:i + batch_size] for i in range(0, len(prompts), batch_size)]
     
     worker_outputs = list(model.map(
@@ -45,134 +57,165 @@ def batch_chat(model: ActorPool, sampling_params: SamplingParams, prompts: list[
 
     return responses
 
-SELECT_RXCLASS_TOOL = {
-    "type": "function",
-    "function": {
-        "name": "select_rxclass",
-        "description": "Select the most relevant RxClass.",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "class": {
-                    "type": "string",
-                    "description": "The exact name of the selected RxClass class."
-                }
-            },
-            "required": ["class"],
-            "additionalProperties": False,
+SELECT_RXCLASS_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "reasoning": {
+            "type": "string",
+            "description": (
+                "A justification (strictly 2-3 sentences) for choosing "
+                "the selected index. Do not include XML, HTML, Markdown, "
+                "or special tags."
+            ),
         },
+        "index": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": len(RXCLASS_NAMES) - 1,
+            "description": (
+                "The zero-based index of the selected RxClass."
+            )
+        }
     },
+    "required": ["reasoning", "index"],
+    "additionalProperties": False,
 }
 
-def select_rxclass_task(model: ActorPool, sampling_params: SamplingParams, patient_notes: list[dict[str, str]]) -> tuple[list[dict[str, Any]], list[str], list[str], float]:
+def select_rxclass_task(model: ActorPool, patient_notes: list[dict[str, str]]) -> tuple[list[dict[str, Any]], list[str], list[str], float]:
     prompts = [select_rxclass_prompt(patient_note) for patient_note in patient_notes]
     grouped_prompts = [json.dumps(p, indent=2) for p in prompts]
-
+    structured_outputs_params = StructuredOutputsParams(json=SELECT_RXCLASS_SCHEMA)
+    sampling_params = SamplingParams(temperature=TEMPERATURE, top_p=TOP_P, max_tokens=MAX_TOKENS, seed=SEED, structured_outputs=structured_outputs_params)
     start_time = time.perf_counter()
-    raw_outputs = batch_chat(model, sampling_params, prompts, [SELECT_RXCLASS_TOOL])
+    raw_outputs = batch_chat(model, sampling_params, prompts)
     elapsed = time.perf_counter() - start_time
 
     selected_classes = []
-    for response in raw_outputs:
-        tool_params = parse_tool_call(response)
-        class_name = tool_params["class"]
+    for prompt, response in zip(prompts, raw_outputs):
+        result = json.loads(response)
+        index = result.get("index")
+        
+        if index is None:
+            raise ValueError(f"""
+                Model didn't output the tool call correctly.\n
+                Here is the prompt:\n\n
+                {prompt}\n\n
+                Here is the output:\n\n
+                {response}
+                """
+            )
+
+        class_name = RXCLASS_INDEX_TO_NAME.get(index)
+
         if class_name is None:
-            raise ValueError(
-                f"Model never emitted the select_rxclass tool call. Raw output:\n{response}"
+            raise ValueError(f"""
+                Invalid RxClass index: {index}
+
+                Valid range: 0-{len(RXCLASS_NAMES)-1}
+
+                Response:
+
+                {response}
+                """
             )
 
         match = RXCLASS_MAPPING.get(class_name)
+
         if not match:
-            raise FileNotFoundError(
-                f"RxClass '{class_name}' does not exist in any RxClass .txt file."
+            raise FileNotFoundError(f"""
+                RxClass '{class_name}' does not exist in any RxClass .txt file.
+                Here is the prompt:\n\n
+                {prompt}\n\n
+                Here is the output:\n\n
+                {response}
+                """
             )
 
         selected_classes.append(match)
 
     return selected_classes, raw_outputs, grouped_prompts, elapsed
 
-SEARCH_CLINICAL_TRIALS_TOOL = {
-    "type": "function",
-    "function": {
-        "name": "search_clinical_trials",
-        "description": ("""
-            Search for clinical studies from ClinicalTrials.gov using one or more
-            search queries. Each query object may specifc a term, condition, and/or
-            intervention. Only use English spellings and double check your spelling.
-            Put each search term into the filter where it fits the best. For example, 
-            put a disease term in the Condition/disease filter and a drug term in the 
-            Intervention/treatment filter. Limit the number of search terms you use in each filter.
-            Start by filling in the filters for the information most important to you
-            """
-        ),
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "queries": {
-                    "type": "array",
-                    "description": "A list of search query objects.",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "term": {
-                                "type": ["string", "null"],
-                                "description": ("""
-                                        This filter is a tool to help focus your search for clinical studies 
-                                        using terms that don't fit in the other basic filters. For example, 
-                                        you can use this filter to search for studies with a specific word in 
-                                        the study title or study description. Other examples of terms you can 
-                                        use in this field include:
+QUERY_TRIALS_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "reasoning": {
+            "type": "string",
+            "description": (
+                "A justification (strictly 2-3 sentences) for why these "
+                "search queries were chosen. Do not include XML, HTML, "
+                "Markdown, or special tags."
+            ),
+        },
+        "queries": {
+            "type": "array",
+            "description": "A list of search query objects.",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "term": {
+                        "type": ["string", "null"],
+                        "description": """
+                            This filter is a tool to help focus your search for clinical studies
+                            using terms that don't fit in the other basic filters. For example,
+                            you can use this filter to search for studies with a specific word in
+                            the study title or study description.
 
-                                        - The NCT number
-                                        - The acronym for a study
-                                        - A biomarker or gene name
-                                        - An outcome measure
-                                                
-                                        Avoid using this filter to type in several different search terms or 
-                                        terms that fit better in the other basic filters.
-                                                
-                                        Note that the term field searches everything. If you search for "cancer" for term, you'll 
-                                        get trials where cancer appears in the title, conditions, interventions, description, 
-                                        eligibility criteria -- everywhere.
-                                                
-                                        Use null if no free-text term is needed.
-                                    """
-                                )
-                            },
-                            "condition": {
-                                "type": ["string", "null"],
-                                "description": ("""
-                                    Use this field to search for studies related to a condition, disease, disorder, 
-                                    syndrome, illness, or injury (For example, breast cancer or high blood pressure). 
-                                    If you are searching for studies about more than one condition, 
-                                    enter each condition separately.
-                                                
-                                    Use null if no condition is specified.
-                                    """
-                                )
-                            },
-                            "intervention": {
-                                "type": ["string", "null"],
-                                "description": ("""
-                                    Use this field to search for studies that use a specific drug, 
-                                    medical device, procedure, or lifestyle change (For example, 
-                                    radiation therapy or low-fat diet).
-                                                
-                                    Use null if no intervention is specified.
-                                    """
-                                )
-                            }
-                        },
-                        "additionalProperties": False
-                    }
-                }
+                            Other examples include:
+                            - The NCT number
+                            - The acronym for a study
+                            - A biomarker or gene name
+                            - An outcome measure
+
+                            Avoid using this filter to type in several different search terms or
+                            terms that fit better in the other basic filters.
+
+                            Note that the term field searches everything. If you search for
+                            'cancer' here, you'll get trials where cancer appears in the title,
+                            conditions, interventions, description, eligibility criteria, etc.
+
+                            Use null if no free-text term is needed.
+                        """
+                    },
+                    "condition": {
+                        "type": ["string", "null"],
+                        "description": """
+                            Use this field to search for studies related to a condition, disease,
+                            disorder, syndrome, illness, or injury (for example, breast cancer or
+                            high blood pressure).
+
+                            If searching for more than one condition, enter each separately.
+
+                            Use null if no condition is specified.
+                        """
+                    },
+                    "intervention": {
+                        "type": ["string", "null"],
+                        "description": """
+                            Use this field to search for studies that use a specific drug,
+                            medical device, procedure, or lifestyle change (for example,
+                            radiation therapy or a low-fat diet).
+
+                            Use null if no intervention is specified.
+                        """
+                    },
+                },
+                "required": [
+                    "term",
+                    "condition",
+                    "intervention",
+                ],
+                "additionalProperties": False,
             },
-            "required": ["queries"],
         },
     },
+    "required": [
+        "reasoning",
+        "queries",
+    ],
+    "additionalProperties": False,
 }
 
-def query_trials_task(model: ActorPool, sampling_params: SamplingParams, patient_notes: list[dict[str, str]], drug_members: list[list[dict[str, Any]]], output_path: Path) -> tuple[list[list[list[dict[str, Any]]]], list[str], list[str], list[tuple[int, int]], float]:
+def query_trials_task(model: ActorPool, patient_notes: list[dict[str, str]], drug_members: list[list[dict[str, Any]]], output_path: Path) -> tuple[list[list[list[dict[str, Any]]]], list[str], list[str], list[tuple[int, int]], float]:
     prompts = []
     counts = []
     
@@ -182,7 +225,9 @@ def query_trials_task(model: ActorPool, sampling_params: SamplingParams, patient
         for drug in patient_drugs:
             prompts.append(query_trials_prompt(patient_note, drug))
 
-    raw_outputs = batch_chat(model, sampling_params, prompts, [SEARCH_CLINICAL_TRIALS_TOOL])
+    structured_outputs_params = StructuredOutputsParams(json=QUERY_TRIALS_SCHEMA)
+    sampling_params = SamplingParams(temperature=TEMPERATURE, top_p=TOP_P, max_tokens=MAX_TOKENS, seed=SEED, structured_outputs=structured_outputs_params)
+    raw_outputs = batch_chat(model, sampling_params, prompts)
     
     all_trials = []
     num_duplicate_trials = []
@@ -198,13 +243,18 @@ def query_trials_task(model: ActorPool, sampling_params: SamplingParams, patient
         patient_all_trials = []
         patient_duplicates = []
         
-        for response in patient_raw_outputs:
-            tool_params = parse_tool_call(response)
-            queries = tool_params.get("queries")
+        for response, prompt in zip(patient_raw_outputs, patient_prompts):
+            result = json.loads(response)
+            queries = result.get("queries")
 
-            if not queries:
-                raise ValueError(
-                    f"The LLM did not use the tool call correctly. Here is the output:\n{response}"
+            if queries is None:
+                raise ValueError(f"""
+                    Model didn't output the tool call correctly.\n
+                    Here is the prompt:\n\n
+                    {prompt}\n\n
+                    Here is the output:\n\n
+                    {response}
+                    """
                 )
 
             trials = search_clinical_trials(
@@ -229,32 +279,28 @@ def query_trials_task(model: ActorPool, sampling_params: SamplingParams, patient
     
     return all_trials, grouped_raw_outputs, grouped_prompts, num_duplicate_trials, elapsed
 
-EVALUATE_RELEVANCE_TOOL = {
-    "type": "function",
-    "function": {
-        "name": "evaluate_relevance",
-        "description": "Evaluate the relevance of a clinical trial to a patient note.",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "relevanceScore": {
-                    "type": "integer",
-                    "minimum": 0,
-                    "maximum": 100,
-                    "description": "An integer score from 0 to 100 indicating how relevant this trial is to the patient."
-                },
-                "reasoning": {
-                    "type": "string",
-                    "description": "Detailed explanation for why this relevance score was assigned."
-                }
-            },
-            "required": ["relevanceScore", "reasoning"],
-            "additionalProperties": False,
+EVALUATE_RELEVANCE_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "reasoning": {
+            "type": "string",
+            "description": "Detailed explanation for why this relevance score was assigned. Do not use markdown, XML, HTML, or tags."
         },
+        "relevanceScore": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "An integer score from 0 to 100 indicating how relevant this trial is to the patient."
+        }
     },
+    "required": [
+        "reasoning",
+        "relevanceScore"
+    ],
+    "additionalProperties": False
 }
 
-def generate_trials_task(model: ActorPool, sampling_params: SamplingParams, patient_notes: list[dict[str, str]], trials: list[list[dict[str, Any]]], output_path: Path, rewrite: bool = False) -> tuple[dict[str, dict[str, Any]], list[str], list[str], float]:
+def generate_trials_task(model: ActorPool, patient_notes: list[dict[str, str]], trials: list[list[dict[str, Any]]], output_path: Path, rewrite: bool = False) -> tuple[dict[str, dict[str, Any]], list[str], list[str], float]:
     
     def __process__(patient_note: dict[str, str], trial: dict[str, Any]) -> tuple[str, dict[str, Any], str]:
         note_id = patient_note.get("source", {}).get("note_id")
@@ -265,6 +311,10 @@ def generate_trials_task(model: ActorPool, sampling_params: SamplingParams, pati
             
         trial_content_path = str(output_path / f"{nct_id}.json")
         meta_info = trial.get("meta")
+
+        if meta_info is None:
+            raise ValueError(f"Trial {nct_id} has no metadata.")
+        
         rxclass = meta_info.get("rxclass")
         drug = meta_info.get("drug")
         rela = meta_info.get("rela")
@@ -279,7 +329,7 @@ def generate_trials_task(model: ActorPool, sampling_params: SamplingParams, pati
                 """
             )
         
-        providence_entry = {
+        provenance_entry = {
             "extraction": str(note_id),
             "rxclass": rxclass,
             "drug": drug,
@@ -291,26 +341,36 @@ def generate_trials_task(model: ActorPool, sampling_params: SamplingParams, pati
             "nct_id": nct_id,
             "note_id": str(note_id),
             "trial_path": trial_content_path,
-            "providence": providence_entry
+            "provenance": provenance_entry
         }
         
         prompt = generate_trials_prompt(patient_note, trial)
         return nct_id, meta_dict, prompt
 
-    def __evaluate__(target_data: dict[str, Any], meta: dict[str, Any], response: str) -> None:
+    def __evaluate__(target_data: dict[str, Any], meta: dict[str, Any], response: str, prompt: list[dict[str, str]]) -> None:
         note_id = meta["note_id"]
-        tool_params = parse_tool_call(response)
-        relevance_score = tool_params.get("relevanceScore")
-        reasoning = tool_params.get("reasoning")
+        result = json.loads(response)
+        relevance_score = result.get("relevanceScore")
+        reasoning = result.get("reasoning")
+
+        if relevance_score is None or reasoning is None:
+            raise ValueError(f"""
+                Model didn't output the tool call correctly.\n
+                Here is the prompt:\n\n
+                {prompt}\n\n
+                Here is the output:\n\n
+                {response}
+                """
+            )
         
         if note_id in target_data["notes"]:
             idx = target_data["notes"].index(note_id)
             if rewrite:
-                target_data["providence"][idx] = meta["providence"]
+                target_data["provenance"][idx] = meta["provenance"]
                 target_data["relevance"][idx] = relevance_score
                 target_data["reasoning"][idx] = reasoning
         else:
-            target_data["providence"].append(meta["providence"])
+            target_data["provenance"].append(meta["provenance"])
             target_data["notes"].append(note_id)
             target_data["relevance"].append(relevance_score)
             target_data["reasoning"].append(reasoning)
@@ -327,9 +387,11 @@ def generate_trials_task(model: ActorPool, sampling_params: SamplingParams, pati
             _, meta_dict, prompt = __process__(patient_note, trial)
             metadata.append(meta_dict)
             prompts.append(prompt)
-    
+
+    structured_outputs_params = StructuredOutputsParams(json=EVALUATE_RELEVANCE_SCHEMA)
+    sampling_params = SamplingParams(temperature=TEMPERATURE, top_p=TOP_P, max_tokens=MAX_TOKENS, seed=SEED, structured_outputs=structured_outputs_params)
     start_time = time.perf_counter()
-    raw_outputs = batch_chat(model, sampling_params, prompts, [EVALUATE_RELEVANCE_TOOL])
+    raw_outputs = batch_chat(model, sampling_params, prompts)
     elapsed = time.perf_counter() - start_time
     
     grouped_raw_outputs = []
@@ -348,7 +410,7 @@ def generate_trials_task(model: ActorPool, sampling_params: SamplingParams, pati
     
     aggregated_results = {}
     
-    for meta, response in zip(metadata, raw_outputs):
+    for meta, response, prompt in zip(metadata, raw_outputs, prompts):
         nct_id = meta["nct_id"]
         file_path = output_path / f"{nct_id}.json"
         
@@ -362,13 +424,13 @@ def generate_trials_task(model: ActorPool, sampling_params: SamplingParams, pati
             else:
                 aggregated_results[nct_id] = {
                     "trial": meta["trial_path"],
-                    "providence": [],
+                    "provenance": [],
                     "notes": [],
                     "relevance": [],
                     "reasoning": []
                 }
                 
-        __evaluate__(aggregated_results[nct_id], meta, response)
+        __evaluate__(aggregated_results[nct_id], meta, response, prompt)
         
     for nct_id, data in aggregated_results.items():
         file_path = output_path / f"{nct_id}.json"
@@ -376,3 +438,6 @@ def generate_trials_task(model: ActorPool, sampling_params: SamplingParams, pati
             json.dump(data, f, indent=2)
             
     return aggregated_results, grouped_raw_outputs, grouped_prompts, elapsed
+
+if __name__ == "__main__":
+    print(len(RXCLASS_NAMES))

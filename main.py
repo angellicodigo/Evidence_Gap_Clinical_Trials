@@ -1,8 +1,7 @@
 from pathlib import Path
-from vllm import SamplingParams
 from ray.util import ActorPool
 from tools.Ray import get_actor_pool
-from tools.tasks import select_rxclass_task, query_trials_task, generate_trials_task
+from tools.tasks import select_rxclass_task, query_trials_task, generate_trials_task, SELECT_RXCLASS_SCHEMA
 from tools.RxClass import getClassesMembers
 from tools.ClinicalTrialGov import get_nct_id, extract_clinical_info
 from tools.logger import log, dump, RESPONSES_STORE_PATH
@@ -22,7 +21,7 @@ def load_patient_notes(notes_dir: Path, limit: int | None = None) -> list[dict[s
 
         patient_id = str(patient_note["source"]["note_id"])
 
-        output_dir = RESPONSES_STORE_PATH / patient_id
+        output_dir = RESPONSES_STORE_PATH / "patients" / patient_id
         output_dir.mkdir(parents=True, exist_ok=True)
 
         log_path = output_dir / "pipeline.log"
@@ -42,11 +41,10 @@ def load_patient_notes(notes_dir: Path, limit: int | None = None) -> list[dict[s
     return patient_notes
 
 
-def select_rxclasses(model: ActorPool, sampling_params: SamplingParams, patient_notes: list[dict[str, str]]) -> list[dict[str, Any]]:
+def select_rxclasses(model: ActorPool, patient_notes: list[dict[str, str]]) -> list[dict[str, Any]]:
     log(patient_notes, "Starting inital Nemotron task.", stage="RXCLASS")
-    selected_classes, raw_outputs, prompt_outputs, prompt_lengths, elapsed = select_rxclass_task(model, sampling_params, patient_notes)
+    selected_classes, raw_outputs, prompt_outputs, elapsed = select_rxclass_task(model, patient_notes)
     log(patient_notes, "Successfully asked Nemotron to read the extraction and choose a RxClass.", contents=selected_classes, stage="RXCLASS")
-    log(patient_notes, "Generated prompt token lengths for RxClass selection.", contents=prompt_lengths, stage="RXCLASS")
     log(patient_notes, f"This task took an average time of {(elapsed / len(patient_notes)):.2f} seconds.", stage="RXCLASS")
     dump(patient_notes, prompt_outputs, filename="prompts.txt")
     log(patient_notes, "Updated prompts.txt.", stage="RXCLASS")
@@ -73,18 +71,22 @@ def fetch_drug_members(patient_notes: list[dict[str, str]], selected_classes: li
     )
     elapsed = time.perf_counter() - start_time
     
-    total_drug_members = sum(len(sublist) for sublist in drug_members)
-    log(patient_notes, f"Successfully retrieved {total_drug_members} drug members.", contents=drug_members, stage="DRUGS")
+    for patient_note, members in zip(patient_notes, drug_members):
+        log(
+            [patient_note],
+            f"Successfully retrieved {len(members)} drug members.",
+            contents=[members],
+            stage="DRUGS",
+        )
     log(patient_notes, f"This task took an average time of {(elapsed / len(patient_notes)):.2f} seconds.", stage="DRUGS")
     return drug_members
 
 
-def query_trials(model: ActorPool, sampling_params: SamplingParams, patient_notes: list[dict[str, str]], drug_members: list[list[dict[str, Any]]]):
+def query_trials(model: ActorPool, patient_notes: list[dict[str, str]], drug_members: list[list[dict[str, Any]]]):
     log(patient_notes, "Starting ClinicalTrials.gov query generation task.", stage="TRIALS")
     
     trials, query_raw_outputs, query_prompts, num_duplicate_trials, query_elapsed = query_trials_task(
         model, 
-        sampling_params, 
         patient_notes, 
         drug_members, 
         TRIAL_STORE_PATH
@@ -108,7 +110,7 @@ def query_trials(model: ActorPool, sampling_params: SamplingParams, patient_note
     return trials
 
 
-def evaluate_trials(model: ActorPool, sampling_params: SamplingParams, patient_notes: list[dict[str, str]], all_trials, drug_members):
+def evaluate_trials(model: ActorPool, patient_notes: list[dict[str, str]], all_trials, drug_members):
     log(patient_notes, "Starting clinical trial relevance evaluation task.", stage="EVALUATE")
 
     formatted_trials = []
@@ -150,7 +152,6 @@ def evaluate_trials(model: ActorPool, sampling_params: SamplingParams, patient_n
 
     eval_results, eval_raw_outputs, eval_prompts, eval_elapsed = generate_trials_task(
         model=model,
-        sampling_params=sampling_params,
         patient_notes=patient_notes,
         trials=formatted_trials,
         output_path=RESPONSES_STORE_PATH,
@@ -167,16 +168,16 @@ def evaluate_trials(model: ActorPool, sampling_params: SamplingParams, patient_n
     return eval_results
 
 
-def process_patient_notes(patient_notes: list[dict[str, str]], model: ActorPool, sampling_params: SamplingParams) -> None:
-    selected_classes = select_rxclasses(model, sampling_params, patient_notes)
+def process_patient_notes(patient_notes: list[dict[str, str]], model: ActorPool) -> None:
+    selected_classes = select_rxclasses(model, patient_notes)
     drug_members = fetch_drug_members(patient_notes, selected_classes)
-    all_trials = query_trials(model, sampling_params, patient_notes, drug_members)
-    eval_results = evaluate_trials(model, sampling_params, patient_notes, all_trials, drug_members)
-
+    all_trials = query_trials(model, patient_notes, drug_members)
+    eval_results = evaluate_trials(model, patient_notes, all_trials, drug_members)
 
 if __name__ == "__main__":
     patient_notes = load_patient_notes(PATIENT_NOTES_PATH)
     log(patient_notes, "Successfully loaded patient notes.", stage="LOAD")
     pool = get_actor_pool()
-    sampling_params = SamplingParams(temperature=1.0, top_p=0.95, repetition_penalty=1.15, max_tokens=64000, seed=12345)
-    process_patient_notes(patient_notes, pool, sampling_params)
+    # Documentation recommends temperature=1.0 and top_p=0.95 for most tasks
+    # https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-FP8
+    process_patient_notes(patient_notes, pool)

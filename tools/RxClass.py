@@ -306,7 +306,7 @@ def getRelaDescription(relaSource: str | None = None, rela: str | None = None) -
     
     return descriptions
 
-def getClassTypeDescription(classType: str | None = None) -> str | dict[str, str] | None:
+def getClassTypeDescription(classType: str | None = None) -> str | dict[str, str] | None: # 
     descriptions = {
         "ATC1-4": """Anatomical Therapeutic Chemical (ATC) containing class levels 1 through 4. 
         The ATC classification system groups drugs according to the organ or system on which they act 

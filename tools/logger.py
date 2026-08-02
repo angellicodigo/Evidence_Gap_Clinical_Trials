@@ -19,7 +19,7 @@ def log(patient_notes: list[dict[str, str]], message: str, contents: list[Any] |
 
     for i, patient_note in enumerate(patient_notes):
         patient_id = str(patient_note.get("source").get("note_id"))
-        log_path = RESPONSES_STORE_PATH / patient_id / "pipeline.log"
+        log_path = RESPONSES_STORE_PATH / "patients" / patient_id / "pipeline.log"
 
         with log_path.open("a", encoding="utf-8") as f:
             f.write(f"{prefix} {message}\n")
@@ -35,8 +35,8 @@ def dump(patient_notes: list[dict[str, str]], outputs: list[str], filename: str 
 
     for patient_note, output in zip(patient_notes, outputs):
         patient_id = str(patient_note.get("source").get("note_id"))
-        file_path = RESPONSES_STORE_PATH / patient_id / filename
-
+        file_path = RESPONSES_STORE_PATH / "patients" / patient_id / filename 
+        
         with file_path.open("a", encoding="utf-8") as f:
             f.write(output)
             f.write("\n")

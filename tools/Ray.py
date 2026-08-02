@@ -40,8 +40,7 @@ class NemotronB200:
             tensor_parallel_size=1,
             dtype="auto",
             kv_cache_dtype="fp8",
-            gpu_memory_utilization=0.90,
-            max_model_len=1048576,
+            gpu_memory_utilization=0.90
         )
 
     def chat(self, messages: list[list[dict[str, Any]]], sampling_params: SamplingParams, tools: list[dict[str, Any]] | None = None) -> dict[str, Any]:
@@ -79,8 +78,7 @@ class NemotronL40:
             tensor_parallel_size=4,
             dtype="auto",
             kv_cache_dtype="fp8",
-            gpu_memory_utilization=0.90,
-            max_model_len=1048576,
+            gpu_memory_utilization=0.90
         )
 
     def chat(self, messages: list[list[dict[str, Any]]], sampling_params: SamplingParams, tools: list[dict[str, Any]] | None = None) -> dict[str, Any]:
