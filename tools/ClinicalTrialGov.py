@@ -2,7 +2,7 @@ from concurrent.futures import ThreadPoolExecutor
 from itertools import repeat
 from pathlib import Path
 from typing import Any
-import json
+import orjson
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
@@ -15,7 +15,7 @@ retry_strategy = Retry(
     respect_retry_after_header=True,  # honor the server's Retry-After header if it sends one
 )
 
-max_connections = 4
+max_connections = 16
 session = requests.Session()
 adapter = HTTPAdapter(
     max_retries=retry_strategy, 
@@ -155,7 +155,7 @@ def download_clinical_trials(studies: list[dict[str, Any]], output_path: Path, r
         extracted = extract_clinical_info(study)
 
         with output_file.open("w", encoding="utf-8") as f:
-            json.dump(extracted, f, indent=2)
+            f.write(orjson.dumps(extracted, option=orjson.OPT_INDENT_2))
 
         paths.append(output_file)
 
@@ -170,7 +170,8 @@ def search_clinical_trials(
     excludeNctIds: list[str] | None = None,
     output_path: Path | None = None,
     excludeDuplicates: bool = False,
-    num_workers: int = 2
+    num_workers: int = 4,
+    pageSize: int = 1000
 ) -> list[dict[str, Any]]:
 
     if not queries:
@@ -189,17 +190,30 @@ def search_clinical_trials(
         hasResults: bool = False,
         studyType: str | None = None,
         excludeNctIds: list[str] | None = None,
-        output_path: Path | None = None,
+        output_path: Path | None = None
     ) -> dict[str, Any]:
 
+        # Requesting only the parts I need to hopefully save time
         fields = ",".join([
-            "protocolSection",
-            "resultsSection",
-            "hasResults"
+            "hasResults",
+
+            "protocolSection.identificationModule",
+            "protocolSection.statusModule",
+            "protocolSection.descriptionModule",
+            "protocolSection.conditionsModule",
+            "protocolSection.designModule",
+            "protocolSection.eligibilityModule",
+            "protocolSection.armsInterventionsModule",
+
+            "resultsSection.participantFlowModule",
+            "resultsSection.baselineCharacteristicsModule",
+            "resultsSection.outcomeMeasuresModule",
+            "resultsSection.adverseEventsModule",
+            "resultsSection.moreInfoModule",
         ])
 
         params = {
-            "pageSize": 1000,
+            "pageSize": pageSize,
             "filter.overallStatus": "COMPLETED",
             "countTotal": "true",
             "fields": fields,
@@ -250,7 +264,7 @@ def search_clinical_trials(
             if response.status_code == 429:
                 raise RuntimeError(f"Rate limit exceeded (429). Retry strategy exhausted for query: {query}")
             
-            data = response.json()
+            data = orjson.loads(response.content)
 
             if total_count == 0:
                 total_count = data.get("totalCount", 0)
@@ -359,7 +373,7 @@ if __name__ == "__main__":
     ]
 
     # Test concurrency scaling
-    worker_counts = [1, 2, 4, 8, 16]
+    worker_counts = [1, 2, 4, 8, 16, 50]
 
     print(f"Benchmarking {len(test_queries)} concurrent queries...\n")
     print(f"{'Workers':<10} | {'Time (seconds)':<15} | {'Total Studies Retrieved'}")
@@ -379,11 +393,3 @@ if __name__ == "__main__":
         total_studies = sum(len(res["studies"]) for res in results)
 
         print(f"{workers:<10} | {elapsed_time:<15.4f} | {total_studies}")
-
-    test_queries = [
-        {
-            "term": None, 
-            "condition": "hiatal hernia", 
-            "intervention": "magaldrate"
-        }
-    ]

@@ -10,7 +10,7 @@ dependencies:
   - pandas
   - requests
   - urllib3
-
+  - orjson
   - pip:
       - ray
       - vllm

@@ -1,5 +1,5 @@
 from tools.RxClass import getRelaDescription
-import json
+import orjson
 from pathlib import Path
 from typing import Any
 
@@ -52,7 +52,7 @@ def select_rxclass_prompt(patient_note: dict[str, str]) -> list[dict[str, str]]:
             "content": f"""
                 First, read and understand the patient information below.
 
-                {json.dumps(patient_note)}
+                {orjson.dumps(patient_note).decode("utf-8")}
 
                 # Core Responsibilities
                 - Evaluate the patient's notes
@@ -84,7 +84,7 @@ def select_rxclass_prompt(patient_note: dict[str, str]) -> list[dict[str, str]]:
                 - Do not return any fields other than `reasoning` and `index`.
 
                 # Example
-                {json.dumps(example)}
+                {orjson.dumps(example).decode("utf-8")}
 
                 Full RxClass Information:
 
@@ -135,7 +135,7 @@ def query_trials_prompt(patient_note: dict[str, str], drug_member: dict[str, str
             "content": f"""
                 Read the patient information below.
 
-                {json.dumps(patient_note)}
+                {orjson.dumps(patient_note).decode("utf-8")}
 
                 Drug Information
 
@@ -173,7 +173,7 @@ def query_trials_prompt(patient_note: dict[str, str], drug_member: dict[str, str
                 - Do not include XML, HTML, Markdown, code fences, or special tags.
 
                 # Example
-                {json.dumps(example, indent=2)}
+                {orjson.dumps(example).decode("utf-8")}
             """
         },
     ]
@@ -206,11 +206,11 @@ def generate_trials_prompt(patient_note: dict[str, str], trial: dict[str, Any]) 
 
                 Patient Note
 
-                {json.dumps(patient_note)}
+                {orjson.dumps(patient_note).decode("utf-8")}
 
                 Clinical Trial
 
-                {json.dumps(trial)}
+                {orjson.dumps(patient_note).decode("utf-8")}
 
                 # Core Responsibilities
                 - Evaluate the patient's clinical characteristics.
@@ -243,7 +243,7 @@ def generate_trials_prompt(patient_note: dict[str, str], trial: dict[str, Any]) 
                 - Do not return any fields other than reasoning and relevanceScore.
 
                 # Example
-                {json.dumps(example, indent=2)}
+                {orjson.dumps(patient_note).decode("utf-8")}
         """
         }
     ]

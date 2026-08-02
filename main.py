@@ -5,7 +5,7 @@ from tools.tasks import select_rxclass_task, query_trials_task, generate_trials_
 from tools.RxClass import getClassesMembers
 from tools.ClinicalTrialGov import get_nct_id, extract_clinical_info
 from tools.logger import log, dump, RESPONSES_STORE_PATH
-import json
+import orjson
 import time
 from typing import Any
 
@@ -16,8 +16,8 @@ def load_patient_notes(notes_dir: Path, limit: int | None = None) -> list[dict[s
     patient_notes = []
 
     for file_path in sorted(notes_dir.glob("*.json"))[:limit]:
-        with file_path.open("r", encoding="utf-8") as f:
-            patient_note = json.load(f)
+        with file_path.open("rb") as f:
+            patient_note = orjson.loads(f.read())
 
         patient_id = str(patient_note["source"]["note_id"])
 

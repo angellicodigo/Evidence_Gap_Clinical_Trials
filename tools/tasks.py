@@ -4,7 +4,7 @@ from ray.util import ActorPool
 from tools.prompts import select_rxclass_prompt, RXCLASS_DRUGS_PATH, query_trials_prompt, generate_trials_prompt
 from tools.ClinicalTrialGov import search_clinical_trials, count_num_trials
 from pathlib import Path
-import json
+import orjson
 from vllm import SamplingParams
 # Note: I found using StructuredOutputsParams help avoid hallucinations 
 # at the cost of limiting Nemotron's ability to output its reasoning
@@ -88,7 +88,7 @@ SELECT_RXCLASS_SCHEMA = {
 
 def select_rxclass_task(model: ActorPool, patient_notes: list[dict[str, str]]) -> tuple[list[dict[str, Any]], list[str], list[str], float]:
     prompts = [select_rxclass_prompt(patient_note) for patient_note in patient_notes]
-    grouped_prompts = [json.dumps(p, indent=2) for p in prompts]
+    grouped_prompts = [orjson.dumps(p, option=orjson.OPT_INDENT_2).decode("utf-8") for p in prompts]
     structured_outputs_params = StructuredOutputsParams(json=SELECT_RXCLASS_SCHEMA)
     sampling_params = SamplingParams(temperature=TEMPERATURE, top_p=TOP_P, max_tokens=MAX_TOKENS, seed=SEED, structured_outputs=structured_outputs_params)
     start_time = time.perf_counter()
@@ -98,8 +98,8 @@ def select_rxclass_task(model: ActorPool, patient_notes: list[dict[str, str]]) -
     selected_classes = []
     for prompt, response in zip(prompts, raw_outputs):
         try:
-            result = json.loads(response)
-        except json.JSONDecodeError as e:
+            result = orjson.loads(response)
+        except orjson.JSONDecodeError as e:
             raise ValueError(
                 f"Failed to parse JSON. The model likely hit a repetition loop and was truncated.\n"
                 f"JSON Error: {e}\n\n"
@@ -258,8 +258,8 @@ def query_trials_task(model: ActorPool, patient_notes: list[dict[str, str]], dru
         
         for response, prompt in zip(patient_raw_outputs, patient_prompts):
             try:
-                result = json.loads(response)
-            except json.JSONDecodeError as e:
+                result = orjson.loads(response)
+            except orjson.JSONDecodeError as e:
                 raise ValueError(
                     f"Failed to parse JSON. The model likely hit a repetition loop and was truncated.\n"
                     f"JSON Error: {e}\n\n"
@@ -291,7 +291,7 @@ def query_trials_task(model: ActorPool, patient_notes: list[dict[str, str]], dru
             patient_all_trials.append(trials)
 
         grouped_raw_outputs.append(separator.join(patient_raw_outputs))
-        grouped_prompts.append(separator.join([json.dumps(p, indent=2) for p in patient_prompts]))
+        grouped_prompts.append(separator.join([orjson.dumps(p, option=orjson.OPT_INDENT_2).decode("utf-8") for p in patient_prompts]))
 
         all_trials.append(patient_all_trials)
         num_duplicate_trials.append(patient_duplicates)
@@ -306,7 +306,7 @@ EVALUATE_RELEVANCE_SCHEMA = {
     "properties": {
         "reasoning": {
             "type": "string",
-            "description": "Detailed explanation for why this relevance score was assigned. Do not use markdown, XML, HTML, or tags."
+            "description": "2-3 sentences explaining for why this relevance score was assigned. Do not use markdown, XML, HTML, or tags."
         },
         "relevanceScore": {
             "type": "integer",
@@ -372,8 +372,8 @@ def generate_trials_task(model: ActorPool, patient_notes: list[dict[str, str]], 
     def __evaluate__(target_data: dict[str, Any], meta: dict[str, Any], response: str, prompt: list[dict[str, str]]) -> None:
         note_id = meta["note_id"]
         try:
-            result = json.loads(response)
-        except json.JSONDecodeError as e:
+            result = orjson.loads(response)
+        except orjson.JSONDecodeError as e:
             raise ValueError(
                 f"Failed to parse JSON. The model likely hit a repetition loop and was truncated.\n"
                 f"JSON Error: {e}\n\n"
@@ -437,7 +437,7 @@ def generate_trials_task(model: ActorPool, patient_notes: list[dict[str, str]], 
         patient_prompts = prompts[output_idx : output_idx + count]
 
         grouped_raw_outputs.append(separator.join(patient_raw_outputs))
-        grouped_prompts.append(separator.join([json.dumps(p, indent=2) for p in patient_prompts]))
+        grouped_prompts.append(separator.join([orjson.dumps(p, option=orjson.OPT_INDENT_2).decode("utf-8") for p in patient_prompts]))
 
         output_idx += count
     
@@ -449,8 +449,8 @@ def generate_trials_task(model: ActorPool, patient_notes: list[dict[str, str]], 
         
         if nct_id not in aggregated_results:
             if file_path.exists():
-                with file_path.open("r", encoding="utf-8") as f:
-                    data = json.load(f)
+                with file_path.open("rb") as f:
+                    orjson.loads(f.read())
                     if "reasoning" not in data:
                         data["reasoning"] = []
                     aggregated_results[nct_id] = data
@@ -468,7 +468,7 @@ def generate_trials_task(model: ActorPool, patient_notes: list[dict[str, str]], 
     for nct_id, data in aggregated_results.items():
         file_path = output_path / f"{nct_id}.json"
         with file_path.open("w", encoding="utf-8") as f:
-            json.dump(data, f, indent=2)
+            f.write(orjson.dumps(data, option=orjson.OPT_INDENT_2))
             
     return aggregated_results, grouped_raw_outputs, grouped_prompts, elapsed
 
