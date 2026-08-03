@@ -41,7 +41,7 @@ $ bsub -Is -P acc_EHR_ML -q premium -n 4 -R "rusage[mem=8000]" -W 10:00 bash
 2. Run this command
 $ tmux new -s nemotron-FP8-download
 3. Set the path
-$ export HF_HOME=/sc/arion/projects/EHR_ML/lia38/nemotronL40/.cache
+$ export HF_HOME=/sc/arion/projects/EHR_ML/$USER/Evidence_Gap_Clinical_Trials/.cache
 4. Set up the environment
 $ ml purge && ml proxies && ml load miniforge3/26.1.1-3 cuda/12.8.0 
 5. Activate conda environment
