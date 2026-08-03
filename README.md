@@ -77,6 +77,7 @@ $ bpeek <Job ID of start_ray_cluster.lsf>
 2. In a separate terminal or Git Bash,
 $ ssh -L 25053:<IP>:25053 <Mount Sinai ID>@minerva.hpc.mssm.edu
 3. Open http://localhost:25053/ on your web browser.
+
 **Note: I haven't tested if the dashboard still works after many updates to the code**
 
 You can also open the Ray Dashboard in VSCode instead
